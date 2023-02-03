@@ -6,8 +6,8 @@ DEBUG_FLAGS := -g -DDEBUG=1
 compile: spkmeans.c strutils.c matutils.c jacobi.c
 	$(COMPILER) $(FLAGS) spkmeans.c strutils.c matutils.c jacobi.c $(LINKER_FLAGS) -o spkmeans
 
-compile_no_flags: kmeans.c strutils.c matutils.c jacobi.c
+compile_no_flags: spkmeans.c strutils.c matutils.c jacobi.c
 	$(COMPILER) spkmeans.c strutils.c matutils.c jacobi.c $(LINKER_FLAGS) -o spkmeans
 
-debug: kmeans.c strutils.c matutils.c jacobi.c
+debug: spkmeans.c strutils.c matutils.c jacobi.c
 	$(COMPILER) $(DEBUG_FLAGS) spkmeans.c strutils.c matutils.c jacobi.c $(LINKER_FLAGS) -o spkmeans

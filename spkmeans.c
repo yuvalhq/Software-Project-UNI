@@ -50,6 +50,7 @@ int main(int argc, char *argv[]) {
     free_matrix(ll, n);
     free_matrix(rr -> eigenvectors, n);
     free(rr -> eigenvalues);
+    free(rr);
     return EXIT_SUCCESS;
 }
 
