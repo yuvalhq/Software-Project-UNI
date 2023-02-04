@@ -40,6 +40,17 @@ void free_matrix(Matrix mat, size_t n) {
 }
 
 
+Vector get_diagonal_values_from_matrix(Matrix mat, size_t n){
+    size_t i;
+    Vector eigenvalues = (Vector) calloc(n, sizeof(double));
+
+    for (i = 0; i < n; i++) {
+        eigenvalues[i] = mat[i][i];
+    }
+    return eigenvalues;
+}
+
+
 void print_matrix(Matrix mat, size_t n, size_t m) {
     size_t i;
     for (i = 0; i < n; i++) {
