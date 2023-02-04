@@ -2,13 +2,14 @@
 #define _GNU_SOURCE
 #endif
 
+#define MAX_ROTATIONS 100
+#define EPSILON 0.00001
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
-#include "spkmeans.h"
 #include "jacobi.h"
-#include "matutils.h"
 
 
 JacobiResult *jacobi(Matrix mat, size_t n) {
@@ -21,7 +22,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     JacobiParameters *jp = NULL;
     JacobiResult *res = NULL;
 
-    for(iter = 0; convergence > epsilon && iter < MAX_ROTATIONS; iter++) {
+    for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
         a_new = transform(a, pivot, jp -> c, jp -> s, n);
@@ -137,9 +138,7 @@ Matrix build_rotation_matrix(Coordinate *pivot, JacobiParameters *jp, size_t n) 
 
 Matrix mat_mul(Matrix mat1, Matrix mat2, size_t n){
     size_t i, j, k;
-    Matrix res;
-
-    res = build_matrix(n);
+    Matrix res = build_matrix(n);
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
             for (k = 0; k < n; k++) {

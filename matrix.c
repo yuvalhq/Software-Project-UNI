@@ -2,10 +2,13 @@
 #define _GNU_SOURCE
 #endif
 
+#define COMMA ','
+#define NEWLINE '\n'
+
 #include <stdlib.h>
 #include <stdio.h>
-#include "spkmeans.h"
-#include "matutils.h"
+#include "common.h"
+#include "matrix.h"
 #include "strutils.h"
 
 
@@ -24,7 +27,7 @@ Matrix build_identity_mat(size_t n) {
     size_t i;
     Matrix mat = build_matrix(n);
 
-    for (i=0; i < n; i++) {
+    for (i = 0; i < n; i++) {
         mat[i][i] = 1;
     }
     return mat;
@@ -74,9 +77,9 @@ void print_vector(Vector vector, size_t m) {
 Matrix get_mat_from_file(char *filename, size_t *n, size_t *m) {
     size_t i, line_len;
     char *line = NULL;
-    char *line_idx;
-    Vector vector;
-    Matrix mat;
+    char *line_idx = NULL;
+    Vector vector = NULL;
+    Matrix mat = NULL;
 
     FILE *file = fopen(filename, "r");
     if (file == NULL) {

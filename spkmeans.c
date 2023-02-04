@@ -2,27 +2,21 @@
 #define _GNU_SOURCE
 #endif
 
+#ifndef DEBUG
+#define DEBUG false
+#endif
+
+#define NUM_OF_ARGS 3
+
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "spkmeans.h"
+#include "common.h"
 #include "jacobi.h"
-#include "matutils.h"
-#include "strutils.h"
-
-#ifndef DEBUG
-#define DEBUG false
-#endif
-
-
-static void handle_args(int argc, char *argv[]);
-Matrix gl(Matrix d, Matrix w, size_t n);
-Matrix ddg(Matrix w, size_t n);
-Matrix wam(Matrix mat, size_t n, size_t m);
-double sq_euclidean_distance(Vector p, Vector q, size_t m);
+#include "spkmeans.h"
 
 
 int main(int argc, char *argv[]) {
