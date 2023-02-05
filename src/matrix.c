@@ -82,9 +82,7 @@ Matrix get_mat_from_file(char *filename, size_t *n, size_t *m) {
     Matrix mat = NULL;
 
     FILE *file = fopen(filename, "r");
-    if (file == NULL) {
-        FATAL_ERROR();
-    }
+    FATAL_ERROR_IF_NULL(file);
 
     mat = (Matrix) malloc(sizeof(Vector));
 
