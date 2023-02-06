@@ -54,7 +54,4 @@ dkms.conf
 bin/*
 !bin/.gitkeep
 
-log/*
-!log/.gitkeep
-
 .vscode/
