@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "vector.h"
 
 double squared_euclidean_distance(Vector p, Vector q, size_t m) {
@@ -8,4 +9,15 @@ double squared_euclidean_distance(Vector p, Vector q, size_t m) {
         distance += pow(p[i] - q[i], 2);
     }
     return distance;
+}
+
+void print_vector(Vector vector, size_t m) {
+    size_t i;
+    for (i = 0; i < m; i++) {
+        printf("%.4f", vector[i]);
+        if (i < m - 1) {
+            printf(",");
+        }
+    }
+    printf("\n");
 }

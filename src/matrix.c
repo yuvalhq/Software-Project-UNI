@@ -53,17 +53,6 @@ void print_matrix(Matrix mat, size_t n, size_t m) {
     size_t i;
     for (i = 0; i < n; i++) {
         print_vector(mat[i], m);
-        printf("\n");
-    }
-}
-
-void print_vector(Vector vector, size_t m) {
-    size_t i;
-    for (i = 0; i < m; i++) {
-        printf("%.4f", vector[i]);
-        if (i < m - 1) {
-            printf(",");
-        }
     }
 }
 
