@@ -2,27 +2,21 @@
 #define _GNU_SOURCE
 #endif
 
+#ifndef DEBUG
+#define DEBUG false
+#endif
+
+#define NUM_OF_ARGS 3
+
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "spkmeans.h"
+#include "common.h"
 #include "jacobi.h"
-#include "matutils.h"
-#include "strutils.h"
-
-#ifndef DEBUG
-#define DEBUG false
-#endif
-
-
-static void handle_args(int argc, char *argv[]);
-Matrix gl(Matrix d, Matrix w, size_t n);
-Matrix ddg(Matrix w, size_t n);
-Matrix wam(Matrix mat, size_t n, size_t m);
-double sq_euclidean_distance(Vector p, Vector q, size_t m);
+#include "spkmeans.h"
 
 
 int main(int argc, char *argv[]) {
@@ -32,7 +26,7 @@ int main(int argc, char *argv[]) {
     
     handle_args(argc, argv);
 
-    input = get_mat_from_file(argv[2], &n, &m);
+    input = build_matrix_from_file(argv[2], &n, &m);
     ww = wam(input, n, m);
     dd = ddg(ww, n);
     ll = gl(dd, ww, n);
@@ -53,7 +47,6 @@ int main(int argc, char *argv[]) {
     free(rr);
     return EXIT_SUCCESS;
 }
-
 
 static void handle_args(int argc, char *argv[]) {
     size_t i;
@@ -79,7 +72,6 @@ static void handle_args(int argc, char *argv[]) {
     }
 }
 
-
 Matrix gl(Matrix d, Matrix w, size_t n) {
     size_t i, j;
     Matrix l = build_matrix(n);
@@ -92,7 +84,6 @@ Matrix gl(Matrix d, Matrix w, size_t n) {
     return l;
 }
 
-
 Matrix ddg(Matrix w, size_t n) {
     size_t i, j;
     Matrix d = build_matrix(n);
@@ -104,7 +95,6 @@ Matrix ddg(Matrix w, size_t n) {
     }
     return d;
 }
-
 
 Matrix wam(Matrix mat, size_t n, size_t m) {
     size_t i, j;
@@ -130,7 +120,6 @@ Matrix wam(Matrix mat, size_t n, size_t m) {
     }
     return w;
 }
-
 
 double sq_euclidean_distance(Vector p, Vector q, size_t m) {
     double distance = 0;
