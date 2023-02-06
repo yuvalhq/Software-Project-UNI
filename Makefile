@@ -17,7 +17,12 @@ CFLAGS            := -ansi -Wall -Wextra -Werror -pedantic-errors
 LIBS              := -lm
 DEBUG_FLAGS       := -g -DDEBUG=1
 
-SRCDIR            := src
+PYTHON_LIB_DIR    := src/extension
+PYTHON_LIB_H      := $(shell find $(PYTHON_LIB_DIR) -name '*.h')
+PYTHON_LIB_C      := $(shell find $(PYTHON_LIB_DIR) -name '*.c')
+PYTHON_LIB_SETUP  := $(PYTHON_LIB_DIR)/setup.py
+
+SRCDIR            := src/spkmeans
 BINDIR            := bin
 LIBSDIR           := libs
 TESTSDIR          := tests
@@ -40,13 +45,17 @@ TESTS_MAIN_OBJECT := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS     := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN        := $(MAIN)-debug
 
-.PHONY: build build-tests debug run-tests valgrind clean
+.PHONY: build build-python-extension build-tests debug run-tests valgrind clean
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
 	$(CC) -o $(MAIN) $+ $(CFLAGS) $(LIBS)
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(MAIN)$(END_COLOR)\n";
+
+build-python-extension: $(PYTHON_LIB_C) $(PYTHON_LIB_H) $(PYTHON_LIB_SETUP)
+	@echo -en "$(BROWN)Building setup.py $(END_COLOR)";
+	python3 $(PYTHON_LIB_SETUP) build_ext --inplace
 
 build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(SRC_OBJECTS))
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -91,4 +100,4 @@ endif
 		$(DEBUG_MAIN) $(args)
 
 clean:
-	@rm -rvf $(BINDIR)/*
+	@rm -rvf $(BINDIR)/* *.so

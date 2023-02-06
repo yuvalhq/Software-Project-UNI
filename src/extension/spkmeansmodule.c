@@ -89,12 +89,9 @@ static PyObject* gl_wrapper(PyObject *self, PyObject *args) {
 }
 
 static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
-    Py_ssize_t m, n;
+    Py_ssize_t n;
     PyObject *data_points = NULL;
     Matrix mat = NULL;
-    Matrix wam = NULL;
-    Matrix ddg = NULL;
-    Matrix gl = NULL;
     JacobiResult *jacobi_result = NULL;
 
     PyObject *res = NULL;
@@ -106,13 +103,8 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     }
 
     n = PyList_Size(data_points);
-    m = PyList_Size(PyList_GetItem(data_points, 0));
     mat = from_python_matrix(data_points);
-
-    wam = weighted_adjacency_matrix(mat, n, m);
-    ddg = diagonal_degree_matrix(wam, n);
-    gl = graph_laplacian(ddg, wam, n);
-    jacobi_result = jacobi(gl, n);
+    jacobi_result = jacobi(mat, n);
 
     eigenvectors = to_python_matrix(jacobi_result -> eigenvectors, n, n);
     eigenvalues = to_python_vector(jacobi_result -> eigenvalues, n);
@@ -121,9 +113,6 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     PyTuple_SetItem(res, 1, eigenvalues);
     
     free_matrix(mat, n);
-    free_matrix(wam, n);
-    free_matrix(ddg, n);
-    free_matrix(gl, n);
     free_matrix(jacobi_result -> eigenvectors, n);
     free(jacobi_result -> eigenvalues);
     free(jacobi_result);
@@ -136,25 +125,65 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_name = "wam",
         .ml_meth = (PyCFunction) wam_wrapper,
         .ml_flags = METH_VARARGS,
-        .ml_doc = PyDoc_STR("Write documentation...")
+        .ml_doc = PyDoc_STR(
+            "wam(data_points)\n"
+            "--\n"
+            "Receives a list of points and converts them to a weighted adjacency matrix, "
+            "which is defined by:\n"
+            "w_ij = exp(-||x_i - x_j||^2 / 2) if i != j, and w_ii = 0\n"
+            "We denote by ||_||^2 the Squared Euclidean Distance.\n\n"
+            "Parameters\n"
+            "----------\n"
+            "datapoints:\n"
+            "    The datapoints to calculate the matrix of."
+        )
     },
     {
         .ml_name = "ddg",
         .ml_meth = (PyCFunction) ddg_wrapper,
         .ml_flags = METH_VARARGS,
-        .ml_doc = PyDoc_STR("Write documentation...")
+        .ml_doc = PyDoc_STR(
+            "ddg(data_points)\n"
+            "--\n"
+            "Receives a list of points and converts them to a weighted adjacency matrix, "
+            "and then calculates the diagonal degree matrix.\n"
+            "The matrix is defined as the diagonal matrix with the degrees d_1,..,d_n on the diagonal "
+            "and zero elsewhere. The degree of a vertex x_i \\in X is defined as:\n"
+            "d_i = sum_{j=1}^{n}(w_ij)\n\n"
+            "Parameters\n"
+            "----------\n"
+            "datapoints:\n"
+            "    The datapoints to calculate the matrix of."
+        )
     },
     {
         .ml_name = "gl",
         .ml_meth = (PyCFunction) gl_wrapper,
         .ml_flags = METH_VARARGS,
-        .ml_doc = PyDoc_STR("Write documentation...")
+        .ml_doc = PyDoc_STR(
+            "gl(data_points)\n"
+            "--\n"
+            "Receives a list of points and converts calculates the graph Laplacian of them.\n"
+            "The graph L \\in R^{n*n} is defined as L = D - W, while D and W are the DDG and WAM respectively.\n\n"
+            "Parameters\n"
+            "----------\n"
+            "datapoints:\n"
+            "    The datapoints to calculate the matrix of."
+        )
     },
     {
         .ml_name = "jacobi",
         .ml_meth = (PyCFunction) jacobi_wrapper,
         .ml_flags = METH_VARARGS,
-        .ml_doc = PyDoc_STR("Write documentation...")
+        .ml_doc = PyDoc_STR(
+            "gl(data_points)\n"
+            "--\n"
+            "Receives a matrix and runs the Jacobi algorithm on it to calculate the eigenvalues and eigenvectors.\n\n"
+            "Parameters\n"
+            "----------\n"
+            "Matrix:\n"
+            "    The matrix to calculate the eigenvalues and eigenvectors of."
+        )
     },
     {NULL, NULL, 0, NULL}
 };

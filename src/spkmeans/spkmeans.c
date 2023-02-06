@@ -25,8 +25,21 @@ int main(int argc, char *argv[]) {
     JacobiResult *jacobi_result = NULL;
     
     CommandLineArguments *args = handle_args(argc, argv);
-
     input = build_matrix_from_file(args -> input_file_path, &n, &m);
+
+    if (args -> goal == JACOBI) {
+        jacobi_result = jacobi(input, n);
+
+        print_matrix(jacobi_result -> eigenvectors, n, n);
+        print_vector(jacobi_result -> eigenvalues, n);
+
+        free_matrix(jacobi_result -> eigenvectors, n);
+        free(jacobi_result -> eigenvalues);
+        free(jacobi_result);
+
+        return EXIT_SUCCESS;
+    }
+
     wam = weighted_adjacency_matrix(input, n, m);
     if (args -> goal == WAM) {
         print_matrix(wam, n, n);
@@ -45,14 +58,6 @@ int main(int argc, char *argv[]) {
         goto free_gl;
     }
 
-    jacobi_result = jacobi(gl, n);
-
-    print_matrix(jacobi_result -> eigenvectors, n, n);
-    print_vector(jacobi_result -> eigenvalues, n);
-
-    free_matrix(jacobi_result -> eigenvectors, n);
-    free(jacobi_result -> eigenvalues);
-    free(jacobi_result);
 free_gl:
     free_matrix(gl, n);
 free_ddg:
