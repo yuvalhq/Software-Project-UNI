@@ -41,7 +41,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
     res -> eigenvectors = v;
-    res -> eigenvalues = get_diagonal_values_from_matrix(a, n);
+    res -> eigenvalues = matrix_diagonal_values(a, n);
     for (i = 0; i < n; i++) {
         if (res -> eigenvalues[i] == 0 && signbit(res -> eigenvalues[i]) != 0) {
             res -> eigenvalues[i] = 0.0;
