@@ -21,53 +21,78 @@
 
 int main(int argc, char *argv[]) {
     size_t n = 0, m = 0;
-    Matrix input, ww, dd, ll;
-    JacobiResult *rr;
+    Matrix input = NULL, wam = NULL, ddg = NULL, gl = NULL;
+    JacobiResult *jacobi_result = NULL;
     
-    handle_args(argc, argv);
+    CommandLineArguments *args = handle_args(argc, argv);
 
-    input = build_matrix_from_file(argv[2], &n, &m);
-    ww = weighted_adjacency_matrix(input, n, m);
-    dd = diagonal_degree_matrix(ww, n);
-    ll = graph_laplacian(dd, ww, n);
-    rr = jacobi(ll, n);
+    input = build_matrix_from_file(args -> input_file_path, &n, &m);
+    wam = weighted_adjacency_matrix(input, n, m);
+    if (args -> goal == WAM) {
+        print_matrix(wam, n, n);
+        goto free_wam;
+    }
 
-    printf("\n");
-    print_matrix(rr -> eigenvectors, n, n);
-    printf("\n");
-    print_vector(rr -> eigenvalues, n);
-    printf("\n");
+    ddg = diagonal_degree_matrix(wam, n);
+    if (args -> goal == DDG) {
+        print_matrix(ddg, n, n);
+        goto free_ddg;
+    }
 
+    gl = graph_laplacian(ddg, wam, n);
+    if (args -> goal == GL) {
+        print_matrix(gl, n, n);
+        goto free_gl;
+    }
+
+    jacobi_result = jacobi(gl, n);
+
+    print_matrix(jacobi_result -> eigenvectors, n, n);
+    print_vector(jacobi_result -> eigenvalues, n);
+
+    free_matrix(jacobi_result -> eigenvectors, n);
+    free(jacobi_result -> eigenvalues);
+    free(jacobi_result);
+free_gl:
+    free_matrix(gl, n);
+free_ddg:
+    free_matrix(ddg, n);
+free_wam:
+    free_matrix(wam, n);
+    free(args);
     free_matrix(input, n);
-    free_matrix(ww, n);
-    free_matrix(dd, n);
-    free_matrix(ll, n);
-    free_matrix(rr -> eigenvectors, n);
-    free(rr -> eigenvalues);
-    free(rr);
+
     return EXIT_SUCCESS;
 }
 
-static void handle_args(int argc, char *argv[]) {
+static Goal create_goal_from_name(char *goal_name) {
     size_t i;
-    bool is_goal_valid = true;
-    char *goals[] = {"wam", "ddg", "gl", "jacobi"};
+
+    for (i = 0; goal_names[i] != NULL; i++) {
+        if (strcmp(goal_names[i], goal_name) == 0) {
+            return (Goal) i;
+        }
+    }
+    
+    return UNKNOWN;
+}
+
+static CommandLineArguments* handle_args(int argc, char *argv[]) {
+    CommandLineArguments* args = NULL;
 
     if (argc != NUM_OF_ARGS) {
         FATAL_ERROR();
     }
 
-    for (i = 0; i < 4; i++) {
-        if (strcmp(argv[1], goals[i]) == 0) {
-            is_goal_valid = false;
-            break;
-        }
-    }
-    if (is_goal_valid) {
+    args = (CommandLineArguments *) malloc(sizeof(CommandLineArguments));
+    args -> goal = create_goal_from_name(argv[1]);
+    args -> input_file_path = argv[2];
+
+    if (args -> goal == UNKNOWN ||
+            access(args -> input_file_path, R_OK) != 0) {
+        free(args);
         FATAL_ERROR();
     }
 
-    if (access(argv[2], R_OK) != 0) {
-        FATAL_ERROR()
-    }
+    return args;
 }
