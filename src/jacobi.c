@@ -8,13 +8,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <stdbool.h>
 #include "jacobi.h"
 
 
 JacobiResult *jacobi(Matrix mat, size_t n) {
     size_t i, j, iter;
-    bool pivoted = false;
     double convergence = 1.0;
     Matrix a = mat, a_new;
     Matrix v = build_identity_mat(n), v_new;
@@ -32,7 +30,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         free(pivot);
         free(jp);
         free_matrix(v, n);
-        if (pivoted) {
+        if (iter > 0) {
             free_matrix(a, n);
         }
 
@@ -40,8 +38,6 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         jp = NULL;
         a = a_new;
         v = v_new;
-
-        pivoted = true;
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
@@ -56,7 +52,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         }
     }
 
-    if (pivoted) {
+    if (iter > 0) {
         free_matrix(a, n);
     }
     return res;
@@ -69,7 +65,7 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
     double val, max_val = -1.0;
 
     for (i = 0; i < n; i++) {
-        for (j = i+1; j < n; j++) {
+        for (j = i + 1; j < n; j++) {
             val = fabs(mat[i][j]);
             if (val > max_val) {
                 res -> i = i;
@@ -158,7 +154,7 @@ double off_sq(Matrix mat, size_t n) {
     double res = 0.0;
 
     for (i = 0; i < n; i++) {
-        for (j = i+1; j < n; j++) {
+        for (j = i + 1; j < n; j++) {
             res += (2 * pow(mat[i][j], 2));
         }
     }
