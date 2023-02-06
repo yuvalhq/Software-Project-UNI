@@ -11,7 +11,6 @@
 #include "matrix.h"
 #include "strutils.h"
 
-
 Matrix build_matrix(size_t n) {
     size_t i;
     Matrix mat = (Matrix) malloc(n * sizeof(Vector));
@@ -22,8 +21,7 @@ Matrix build_matrix(size_t n) {
     return mat;
 }
 
-
-Matrix build_identity_mat(size_t n) {
+Matrix build_identity_matrix(size_t n) {
     size_t i;
     Matrix mat = build_matrix(n);
 
@@ -31,8 +29,7 @@ Matrix build_identity_mat(size_t n) {
         mat[i][i] = 1;
     }
     return mat;
-}    
-
+}
 
 void free_matrix(Matrix mat, size_t n) {
     size_t i;
@@ -41,7 +38,6 @@ void free_matrix(Matrix mat, size_t n) {
     }
     free(mat);
 }
-
 
 Vector get_diagonal_values_from_matrix(Matrix mat, size_t n){
     size_t i;
@@ -53,7 +49,6 @@ Vector get_diagonal_values_from_matrix(Matrix mat, size_t n){
     return eigenvalues;
 }
 
-
 void print_matrix(Matrix mat, size_t n, size_t m) {
     size_t i;
     for (i = 0; i < n; i++) {
@@ -61,7 +56,6 @@ void print_matrix(Matrix mat, size_t n, size_t m) {
         printf("\n");
     }
 }
-
 
 void print_vector(Vector vector, size_t m) {
     size_t i;
@@ -73,8 +67,7 @@ void print_vector(Vector vector, size_t m) {
     }
 }
 
-
-Matrix get_mat_from_file(char *filename, size_t *n, size_t *m) {
+Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     size_t i, line_len;
     char *line = NULL;
     char *line_idx = NULL;

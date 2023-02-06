@@ -8,16 +8,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <stdbool.h>
 #include "jacobi.h"
-
 
 JacobiResult *jacobi(Matrix mat, size_t n) {
     size_t i, j, iter;
-    bool pivoted = false;
     double convergence = 1.0;
     Matrix a = mat, a_new;
-    Matrix v = build_identity_mat(n), v_new;
+    Matrix v = build_identity_matrix(n), v_new;
     Coordinate *pivot = NULL;
     JacobiParameters *jp = NULL;
     JacobiResult *res = NULL;
@@ -32,7 +29,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         free(pivot);
         free(jp);
         free_matrix(v, n);
-        if (pivoted) {
+        if (iter > 0) {
             free_matrix(a, n);
         }
 
@@ -40,8 +37,6 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         jp = NULL;
         a = a_new;
         v = v_new;
-
-        pivoted = true;
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
@@ -56,12 +51,11 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         }
     }
 
-    if (pivoted) {
+    if (iter > 0) {
         free_matrix(a, n);
     }
     return res;
 }
-
 
 Coordinate *get_pivot_coord(Matrix mat, size_t n) {
     size_t i, j;
@@ -69,7 +63,7 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
     double val, max_val = -1.0;
 
     for (i = 0; i < n; i++) {
-        for (j = i+1; j < n; j++) {
+        for (j = i + 1; j < n; j++) {
             val = fabs(mat[i][j]);
             if (val > max_val) {
                 res -> i = i;
@@ -81,7 +75,6 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
     return res;
 }
 
-
 JacobiParameters *get_jacobi_parameters(Matrix a, Coordinate *pivot){
     JacobiParameters *jp = (JacobiParameters *) malloc(sizeof(JacobiParameters));
     jp -> theta = (a[pivot -> j][pivot -> j] - a[pivot -> i][pivot -> i]) / (2 * a[pivot -> i][pivot -> j]);
@@ -90,7 +83,6 @@ JacobiParameters *get_jacobi_parameters(Matrix a, Coordinate *pivot){
     jp -> s = (jp -> t) * (jp -> c);
     return jp;
 }
-
 
 Matrix transform(Matrix mat, Coordinate *pivot, double c, double s, size_t n) {
     size_t i, j;
@@ -125,7 +117,6 @@ Matrix transform(Matrix mat, Coordinate *pivot, double c, double s, size_t n) {
     return mat_new;
 }
 
-
 Matrix jacobi_left_matrix_mul(Matrix mat, Coordinate *pivot, double c, double s, size_t n) {
     size_t i, j;
     Matrix res = build_matrix(n);
@@ -144,7 +135,6 @@ Matrix jacobi_left_matrix_mul(Matrix mat, Coordinate *pivot, double c, double s,
     return res;
 }
 
-
 double off_sq_diff(Matrix mat1, Matrix mat2, size_t n) {
     double off1 = 0.0, off2 = 0.0;
     off1 = off_sq(mat1, n);
@@ -152,13 +142,12 @@ double off_sq_diff(Matrix mat1, Matrix mat2, size_t n) {
     return (off1 - off2);
 }
 
-
 double off_sq(Matrix mat, size_t n) {
     size_t i, j;
     double res = 0.0;
 
     for (i = 0; i < n; i++) {
-        for (j = i+1; j < n; j++) {
+        for (j = i + 1; j < n; j++) {
             res += (2 * pow(mat[i][j], 2));
         }
     }
