@@ -5,9 +5,9 @@
 #define MAX_ROTATIONS 100
 #define EPSILON 0.00001
 
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include "jacobi.h"
 
 JacobiResult *jacobi(Matrix mat, size_t n) {

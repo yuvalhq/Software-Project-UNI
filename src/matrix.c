@@ -103,3 +103,15 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     fclose(file);
     return mat;
 }
+
+Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
+    size_t i, j;
+    Matrix sub = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j=0; j<n; j++){
+            sub[i][j] = left[i][j] - right[i][j];
+        }
+    }
+    return sub;
+}
