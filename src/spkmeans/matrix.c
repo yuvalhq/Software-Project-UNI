@@ -68,12 +68,24 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     return mat;
 }
 
+Matrix copy_matrix(Matrix mat, size_t n) {
+    size_t i, j;
+    Matrix copy = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            copy[i][j] = mat[i][j];
+        }
+    }
+    return copy;
+}
+
 Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
     size_t i, j;
     Matrix sub = build_matrix(n);
 
     for (i = 0; i < n; i++) {
-        for (j=0; j < n; j++){
+        for (j = 0; j < n; j++){
             sub[i][j] = left[i][j] - right[i][j];
         }
     }
