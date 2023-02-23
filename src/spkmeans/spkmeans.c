@@ -33,9 +33,11 @@ int main(int argc, char *argv[]) {
         print_matrix(jacobi_result -> eigenvectors, n, n);
         print_vector(jacobi_result -> eigenvalues, n);
 
+        free_matrix(input, n);
         free_matrix(jacobi_result -> eigenvectors, n);
         free(jacobi_result -> eigenvalues);
         free(jacobi_result);
+        free(args);
 
         return EXIT_SUCCESS;
     }

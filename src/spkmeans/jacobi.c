@@ -11,11 +11,14 @@
 #include <stdio.h>
 #include "jacobi.h"
 
+static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n);
+
 JacobiResult *jacobi(Matrix mat, size_t n) {
-    size_t i, j, iter;
+    size_t iter;
     double convergence = 1.0;
-    Matrix a = mat, a_new;
-    Matrix v = build_identity_matrix(n), v_new;
+    Matrix a = mat, a_new = NULL;
+    Matrix v = build_identity_matrix(n), v_new = NULL;
+    Matrix rotation_matrix = NULL;
     Coordinate *pivot = NULL;
     JacobiParameters *jp = NULL;
     JacobiResult *res = NULL;
@@ -23,12 +26,14 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
+        rotation_matrix = build_rotation_matrix(pivot, jp, n);
         a_new = transform(a, pivot, jp, n);
-        v_new = jacobi_left_matrix_mul(v, pivot, jp -> c, jp -> s, n);
+        v_new = matrix_mul(v, rotation_matrix, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
     
         free(pivot);
         free(jp);
+        free_matrix(rotation_matrix, n);
         free_matrix(v, n);
         if (iter > 0) {
             free_matrix(a, n);
@@ -41,17 +46,12 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
-    res -> eigenvectors = v;
+    res -> eigenvectors = transpose(v, n);
     res -> eigenvalues = matrix_diagonal_values(a, n);
-    for (i = 0; i < n; i++) {
-        if (res -> eigenvalues[i] == 0 && signbit(res -> eigenvalues[i]) != 0) {
-            res -> eigenvalues[i] = 0.0;
-            for (j = 0; j < n; i++) {
-               v[i][j] = -v[i][j];
-            }
-        }
-    }
 
+    _unsign_zero_in_jacobi_result(res, n);
+
+    free_matrix(v, n);
     if (iter > 0) {
         free_matrix(a, n);
     }
@@ -110,21 +110,26 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     return mat_new;
 }
 
-Matrix jacobi_left_matrix_mul(Matrix mat, Coordinate *pivot, double c, double s, size_t n) {
-    size_t i, j;
+Matrix build_rotation_matrix(Coordinate *pivot, JacobiParameters *jp, size_t n) {
+    size_t i;
     Matrix res = build_matrix(n);
 
     for (i = 0; i < n; i++) {
-        for (j = 0; j < n; j++) {
-            if (j == pivot -> i) {
-                res[i][j] = (c * mat[i][j]) - (s * mat[i][pivot -> j]);
-            } else if (j == pivot -> j) {
-                res[i][j] = (s * mat[i][pivot -> i]) + (c * mat[i][j]);
-            } else {
-               res[i][j] = mat[i][j];
-            }
+        if (i == pivot -> i || i == pivot -> j) {
+            res[i][i] = jp -> c;
+        } else {
+            res[i][i] = 1.0;
         }
-    } 
+    }
+
+    if (pivot -> i > pivot -> j) {
+        res[pivot -> i][pivot -> j] = -jp -> s;
+        res[pivot -> j][pivot -> i] = jp -> s;
+    } else {
+        res[pivot -> i][pivot -> j] = jp -> s;
+        res[pivot -> j][pivot -> i] = -jp -> s;
+    }
+
     return res;
 }
 
@@ -145,4 +150,16 @@ double off_diagonal_square(Matrix mat, size_t n) {
         }
     }
     return res;
+}
+
+static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n) {
+    size_t i, j;
+    for (i = 0; i < n; i++) {
+        if (jr -> eigenvalues[i] == 0 && signbit(jr -> eigenvalues[i]) != 0) {
+            jr -> eigenvalues[i] = 0.0;
+            for (j = 0; j < n; i++) {
+               jr -> eigenvectors[i][j] = -jr -> eigenvectors[i][j];
+            }
+        }
+    }
 }
