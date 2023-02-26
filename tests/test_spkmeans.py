@@ -1,9 +1,8 @@
 from typing import List
 
+import mykmeanssp
 import numpy as np
 import pytest
-
-import spkmeans_c
 
 Matrix = List[List[float]]
 
@@ -30,7 +29,7 @@ Matrix = List[List[float]]
 def test_jacobi_algorithm(
     matrix: Matrix, expected_eigenvalues: List[float], expected_eigenvectors: Matrix
 ):
-    actual_eigenvectors, actual_eigenvalues = spkmeans_c.jacobi(matrix)
+    actual_eigenvectors, actual_eigenvalues = mykmeanssp.jacobi(matrix)
     np.testing.assert_almost_equal(expected_eigenvalues, actual_eigenvalues, decimal=3)
     np.testing.assert_almost_equal(
         expected_eigenvectors, actual_eigenvectors, decimal=3

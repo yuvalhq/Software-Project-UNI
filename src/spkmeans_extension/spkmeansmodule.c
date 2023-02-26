@@ -176,7 +176,7 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_meth = (PyCFunction) jacobi_wrapper,
         .ml_flags = METH_VARARGS,
         .ml_doc = PyDoc_STR(
-            "gl(data_points)\n"
+            "jacobi(matrix)\n"
             "--\n"
             "Receives a matrix and runs the Jacobi algorithm on it to calculate the eigenvalues and eigenvectors.\n\n"
             "Parameters\n"
@@ -190,13 +190,13 @@ static PyMethodDef spkmeans_methods[] = {
 
 static struct PyModuleDef spkmeans_module = {
     PyModuleDef_HEAD_INIT,
-    .m_name = "spkmeans_c",
+    .m_name = "mykmeanssp",
     .m_doc = NULL,
     .m_size = -1,
     .m_methods = spkmeans_methods
 };
 
-PyMODINIT_FUNC PyInit_spkmeans_c(void) {
+PyMODINIT_FUNC PyInit_mykmeanssp(void) {
     PyObject *module = PyModule_Create(&spkmeans_module);
 
     if (!module) {

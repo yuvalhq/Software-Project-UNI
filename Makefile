@@ -1,49 +1,51 @@
-PROJECT_NAME      := spkmeans
+PROJECT_NAME            := spkmeans
 
-OS                := $(shell uname -s)
-SHELL             := bash
-COLOR_PREFIX      := e
+OS                      := $(shell uname -s)
+SHELL                   := bash
+COLOR_PREFIX            := e
 
 ifeq ($(OS),Darwin)
-	COLOR_PREFIX  := 033
+	COLOR_PREFIX        := 033
 endif
 
-BROWN             :=\$(COLOR_PREFIX)[0;33m
-BLUE              :=\$(COLOR_PREFIX)[1;34m
-END_COLOR         :=\$(COLOR_PREFIX)[0m
+BROWN                   :=\$(COLOR_PREFIX)[0;33m
+BLUE                    :=\$(COLOR_PREFIX)[1;34m
+END_COLOR               :=\$(COLOR_PREFIX)[0m
 
-CC                := gcc
-CFLAGS            := -ansi -Wall -Wextra -Werror -pedantic-errors
-LIBS              := -lm
-DEBUG_FLAGS       := -g -DDEBUG=1
+CC                      := gcc
+CFLAGS                  := -ansi -Wall -Wextra -Werror -pedantic-errors
+LIBS                    := -lm
+DEBUG_FLAGS             := -g -DDEBUG=1
 
-PYTHON_LIB_DIR    := src/extension
-PYTHON_LIB_H      := $(shell find $(PYTHON_LIB_DIR) -name '*.h')
-PYTHON_LIB_C      := $(shell find $(PYTHON_LIB_DIR) -name '*.c')
-PYTHON_LIB_SETUP  := $(PYTHON_LIB_DIR)/setup.py
+PYTHON_EXTENSION_DIR    := src/spkmeans_extension
+PYTHON_EXTENSION_H      := $(shell find $(PYTHON_EXTENSION_DIR) -name '*.h')
+PYTHON_EXTENSION_C      := $(shell find $(PYTHON_EXTENSION_DIR) -name '*.c')
+PYTHON_EXTENSION_SETUP  := $(PYTHON_EXTENSION_DIR)/setup.py
 
-SRCDIR            := src/spkmeans
-BINDIR            := bin
-LIBSDIR           := libs
-TESTSDIR          := tests
-SRCEXT            := c
+PYTHON_SRC_DIR          := src/spkmeans_python
 
-MAIN              := $(BINDIR)/$(PROJECT_NAME)
-SRC_NAMES         := $(notdir $(basename $(wildcard $(SRCDIR)/*.$(SRCEXT))))
-SRC_HEADERS       := $(shell find $(SRCDIR) -name '*.h')
-SRC_OBJECTS       := $(patsubst %,$(BINDIR)/%.o,$(SRC_NAMES))
+SRCDIR                  := src/spkmeans_c
+BINDIR                  := bin
+LIBSDIR                 := libs
+TESTSDIR                := tests
+SRCEXT                  := c
 
-TESTS_NAME        := $(PROJECT_NAME)-tests
-TESTS_MAIN        := $(BINDIR)/$(TESTS_NAME)
-TESTS_MAIN_C      := $(TESTSDIR)/$(PROJECT_NAME)_tests.c
-TESTS_FLAGS       := -std=c99
-TESTS_LIB_C       := $(LIBSDIR)/munit.c
-TESTS_LIB_H       := $(LIBSDIR)/munit.h
-TESTS_LIB_OBJECT  := $(BINDIR)/munit.o
-TESTS_MAIN_OBJECT := $(BINDIR)/$(PROJECT_NAME)_tests.o
+MAIN                    := $(BINDIR)/$(PROJECT_NAME)
+SRC_NAMES               := $(notdir $(basename $(wildcard $(SRCDIR)/*.$(SRCEXT))))
+SRC_HEADERS             := $(shell find $(SRCDIR) -name '*.h')
+SRC_OBJECTS             := $(patsubst %,$(BINDIR)/%.o,$(SRC_NAMES))
 
-DEBUG_OBJECTS     := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
-DEBUG_MAIN        := $(MAIN)-debug
+TESTS_NAME              := $(PROJECT_NAME)-tests
+TESTS_MAIN              := $(BINDIR)/$(TESTS_NAME)
+TESTS_MAIN_C            := $(TESTSDIR)/$(PROJECT_NAME)_tests.c
+TESTS_FLAGS             := -std=c99
+TESTS_LIB_C             := $(LIBSDIR)/munit.c
+TESTS_LIB_H             := $(LIBSDIR)/munit.h
+TESTS_LIB_OBJECT        := $(BINDIR)/munit.o
+TESTS_MAIN_OBJECT       := $(BINDIR)/$(PROJECT_NAME)_tests.o
+
+DEBUG_OBJECTS           := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
+DEBUG_MAIN              := $(MAIN)-debug
 
 .PHONY: build build-python-extension build-tests debug run-tests run-pytest run-black run-isort valgrind clean
 
@@ -53,9 +55,9 @@ build: $(SRC_OBJECTS)
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(MAIN)$(END_COLOR)\n";
 
-build-python-extension: $(PYTHON_LIB_C) $(PYTHON_LIB_H) $(PYTHON_LIB_SETUP)
+build-python-extension: $(PYTHON_EXTENSION_C) $(PYTHON_EXTENSION_H) $(PYTHON_EXTENSION_SETUP)
 	@echo -en "$(BROWN)Building setup.py $(END_COLOR)";
-	python3 $(PYTHON_LIB_SETUP) build_ext --inplace
+	python3 $(PYTHON_EXTENSION_SETUP) build_ext --build-lib $(PYTHON_SRC_DIR)
 
 build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(SRC_OBJECTS))
 	@echo -en "$(BROWN)LD $(END_COLOR)";
