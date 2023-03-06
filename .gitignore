@@ -55,3 +55,4 @@ bin/*
 !bin/.gitkeep
 
 .vscode/
+__pycache__/
