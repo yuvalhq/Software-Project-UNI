@@ -1,5 +1,6 @@
-from glob import glob
 import os
+from glob import glob
+
 from setuptools import Extension, setup
 
 sources = [

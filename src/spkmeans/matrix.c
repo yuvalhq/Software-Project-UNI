@@ -68,16 +68,54 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     return mat;
 }
 
+Matrix copy_matrix(Matrix mat, size_t n) {
+    size_t i, j;
+    Matrix copy = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            copy[i][j] = mat[i][j];
+        }
+    }
+    return copy;
+}
+
 Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
     size_t i, j;
     Matrix sub = build_matrix(n);
 
     for (i = 0; i < n; i++) {
-        for (j=0; j < n; j++){
+        for (j = 0; j < n; j++){
             sub[i][j] = left[i][j] - right[i][j];
         }
     }
     return sub;
+}
+
+Matrix matrix_mul(Matrix left, Matrix right, size_t n) {
+    size_t i, j, k;
+    Matrix res = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            for (k = 0; k < n; k++) {
+                res[i][j] += left[i][k] * right[k][j];
+            }
+        }
+    }
+    return res;
+}
+
+Matrix transpose(Matrix mat, size_t n) {
+    size_t i, j;
+    Matrix res = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j = 0; j < n; j++) {
+            res[i][j] = mat[j][i];
+        }
+    }
+    return res;
 }
 
 Vector matrix_diagonal_values(Matrix mat, size_t n){

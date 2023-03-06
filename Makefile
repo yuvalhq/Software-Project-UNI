@@ -45,7 +45,7 @@ TESTS_MAIN_OBJECT := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS     := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN        := $(MAIN)-debug
 
-.PHONY: build build-python-extension build-tests debug run-tests valgrind clean
+.PHONY: build build-python-extension build-tests debug run-tests run-pytest run-black run-isort valgrind clean
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -71,6 +71,15 @@ debug: $(DEBUG_OBJECTS)
 
 run-tests: build-tests
 	./$(TESTS_MAIN)
+
+run-pytest: build-python-extension
+	python3 -m pytest -sv .
+
+run-black:
+	python3 -m black .
+
+run-isort:
+	python3 -m isort .
 
 $(BINDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(SRC_HEADERS)
 	@echo -en "$(BROWN)CC $(END_COLOR)";
