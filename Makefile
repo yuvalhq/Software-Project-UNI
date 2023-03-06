@@ -19,7 +19,6 @@ DEBUG_FLAGS       := -g -DDEBUG=1
 
 SRCDIR            := src
 BINDIR            := bin
-LOGDIR            := log
 LIBSDIR           := libs
 TESTSDIR          := tests
 SRCEXT            := c
@@ -87,10 +86,9 @@ endif
 	valgrind \
 		--track-origins=yes \
 		--leak-check=full \
+		--show-leak-kinds=all \
 		--leak-resolution=high \
-		--log-file=$(LOGDIR)/$@.log \
 		$(DEBUG_MAIN) $(args)
-	@echo -en "\nCheck the log file: $(LOGDIR)/$@.log\n"
 
 clean:
 	@rm -rvf $(BINDIR)/*

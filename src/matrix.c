@@ -31,42 +31,6 @@ Matrix build_identity_matrix(size_t n) {
     return mat;
 }
 
-void free_matrix(Matrix mat, size_t n) {
-    size_t i;
-    for (i = 0; i < n; i++) {
-        free(mat[i]);
-    }
-    free(mat);
-}
-
-Vector get_diagonal_values_from_matrix(Matrix mat, size_t n){
-    size_t i;
-    Vector eigenvalues = (Vector) calloc(n, sizeof(double));
-
-    for (i = 0; i < n; i++) {
-        eigenvalues[i] = mat[i][i];
-    }
-    return eigenvalues;
-}
-
-void print_matrix(Matrix mat, size_t n, size_t m) {
-    size_t i;
-    for (i = 0; i < n; i++) {
-        print_vector(mat[i], m);
-        printf("\n");
-    }
-}
-
-void print_vector(Vector vector, size_t m) {
-    size_t i;
-    for (i = 0; i < m; i++) {
-        printf("%.4f", vector[i]);
-        if (i < m - 1) {
-            printf(",");
-        }
-    }
-}
-
 Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     size_t i, line_len;
     char *line = NULL;
@@ -102,4 +66,41 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     free(line);
     fclose(file);
     return mat;
+}
+
+Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
+    size_t i, j;
+    Matrix sub = build_matrix(n);
+
+    for (i = 0; i < n; i++) {
+        for (j=0; j < n; j++){
+            sub[i][j] = left[i][j] - right[i][j];
+        }
+    }
+    return sub;
+}
+
+Vector matrix_diagonal_values(Matrix mat, size_t n){
+    size_t i;
+    Vector eigenvalues = (Vector) calloc(n, sizeof(double));
+
+    for (i = 0; i < n; i++) {
+        eigenvalues[i] = mat[i][i];
+    }
+    return eigenvalues;
+}
+
+void print_matrix(Matrix mat, size_t n, size_t m) {
+    size_t i;
+    for (i = 0; i < n; i++) {
+        print_vector(mat[i], m);
+    }
+}
+
+void free_matrix(Matrix mat, size_t n) {
+    size_t i;
+    for (i = 0; i < n; i++) {
+        free(mat[i]);
+    }
+    free(mat);
 }

@@ -8,7 +8,6 @@
 
 #define NUM_OF_ARGS 3
 
-#include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,117 +15,84 @@
 #include <unistd.h>
 #include "common.h"
 #include "jacobi.h"
+#include "matrix.h"
+#include "spectral.h"
 #include "spkmeans.h"
-
 
 int main(int argc, char *argv[]) {
     size_t n = 0, m = 0;
-    Matrix input, ww, dd, ll;
-    JacobiResult *rr;
+    Matrix input = NULL, wam = NULL, ddg = NULL, gl = NULL;
+    JacobiResult *jacobi_result = NULL;
     
-    handle_args(argc, argv);
+    CommandLineArguments *args = handle_args(argc, argv);
 
-    input = build_matrix_from_file(argv[2], &n, &m);
-    ww = wam(input, n, m);
-    dd = ddg(ww, n);
-    ll = gl(dd, ww, n);
-    rr = jacobi(ll, n);
+    input = build_matrix_from_file(args -> input_file_path, &n, &m);
+    wam = weighted_adjacency_matrix(input, n, m);
+    if (args -> goal == WAM) {
+        print_matrix(wam, n, n);
+        goto free_wam;
+    }
 
-    printf("\n");
-    print_matrix(rr -> eigenvectors, n, n);
-    printf("\n");
-    print_vector(rr -> eigenvalues, n);
-    printf("\n");
+    ddg = diagonal_degree_matrix(wam, n);
+    if (args -> goal == DDG) {
+        print_matrix(ddg, n, n);
+        goto free_ddg;
+    }
 
+    gl = graph_laplacian(ddg, wam, n);
+    if (args -> goal == GL) {
+        print_matrix(gl, n, n);
+        goto free_gl;
+    }
+
+    jacobi_result = jacobi(gl, n);
+
+    print_matrix(jacobi_result -> eigenvectors, n, n);
+    print_vector(jacobi_result -> eigenvalues, n);
+
+    free_matrix(jacobi_result -> eigenvectors, n);
+    free(jacobi_result -> eigenvalues);
+    free(jacobi_result);
+free_gl:
+    free_matrix(gl, n);
+free_ddg:
+    free_matrix(ddg, n);
+free_wam:
+    free_matrix(wam, n);
+    free(args);
     free_matrix(input, n);
-    free_matrix(ww, n);
-    free_matrix(dd, n);
-    free_matrix(ll, n);
-    free_matrix(rr -> eigenvectors, n);
-    free(rr -> eigenvalues);
-    free(rr);
+
     return EXIT_SUCCESS;
 }
 
-static void handle_args(int argc, char *argv[]) {
+static Goal create_goal_from_name(char *goal_name) {
     size_t i;
-    bool is_goal_valid = true;
-    char *goals[] = {"wam", "ddg", "gl", "jacobi"};
+
+    for (i = 0; goal_names[i] != NULL; i++) {
+        if (strcmp(goal_names[i], goal_name) == 0) {
+            return (Goal) i;
+        }
+    }
+    
+    return UNKNOWN;
+}
+
+static CommandLineArguments* handle_args(int argc, char *argv[]) {
+    CommandLineArguments* args = NULL;
 
     if (argc != NUM_OF_ARGS) {
         FATAL_ERROR();
     }
 
-    for (i = 0; i < 4; i++) {
-        if (strcmp(argv[1], goals[i]) == 0) {
-            is_goal_valid = false;
-            break;
-        }
-    }
-    if (is_goal_valid) {
+    args = (CommandLineArguments *) malloc(sizeof(CommandLineArguments));
+    args -> goal = create_goal_from_name(argv[1]);
+    args -> input_file_path = argv[2];
+
+    if (args -> goal == UNKNOWN ||
+            access(args -> input_file_path, R_OK) != 0) {
+        free(args);
         FATAL_ERROR();
     }
 
-    if (access(argv[2], R_OK) != 0) {
-        FATAL_ERROR()
-    }
-}
-
-Matrix gl(Matrix d, Matrix w, size_t n) {
-    size_t i, j;
-    Matrix l = build_matrix(n);
-
-    for (i = 0; i < n; i++) {
-        for (j=0; j<n; j++){
-            l[i][j] = d[i][j] - w[i][j];
-        }
-    }
-    return l;
-}
-
-Matrix ddg(Matrix w, size_t n) {
-    size_t i, j;
-    Matrix d = build_matrix(n);
-
-    for (i = 0; i < n; i++) {
-        for (j=0; j<n; j++){
-            d[i][i] += w[i][j];
-        }
-    }
-    return d;
-}
-
-Matrix wam(Matrix mat, size_t n, size_t m) {
-    size_t i, j;
-    double dist;
-    Matrix w = build_matrix(n);
-
-    for (i = 0; i < n; i++){
-        for (j = i; j < n; j++){
-            if (i == j) {
-                w[i][j] = 0;
-                continue;
-            }
-
-            dist = sq_euclidean_distance(mat[i], mat[j], m);
-            w[i][j] = exp(-dist / 2);
-        }
-    }
-
-    for (i = 0; i < n; i++){
-        for (j = 0; j < i; j++){
-            w[i][j] = w[j][i];
-        }
-    }
-    return w;
-}
-
-double sq_euclidean_distance(Vector p, Vector q, size_t m) {
-    double distance = 0;
-    size_t i;
-
-    for (i = 0; i < m; i++) {
-        distance += pow(p[i] - q[i], 2);
-    }
-    return distance;
+    return args;
 }
