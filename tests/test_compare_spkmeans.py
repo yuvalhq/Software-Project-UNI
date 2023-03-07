@@ -12,7 +12,7 @@ param = [
     [
         (
             "testfiles/test",
-            "testfiles/name/test", # name is a place holder
+            "testfiles/ofek_s/test", # name is a place holder
         ),
     ],
 ]
@@ -64,7 +64,7 @@ def test_jacobi(
         our_mat = read_matrix_from_file(inputs_folder + str(i) + "_j.txt")
         
         our_eigenvectors, our_eigenvalues = mykmeanssp.jacobi(our_mat)
-        other_eigenvectors, other_eigenvalues = read_vector_and_matrix_from_file(others_answer_folder + str(i) + "_j_ans.txt")
+        other_eigenvalues, other_eigenvectors = read_vector_and_matrix_from_file(others_answer_folder + str(i) + "_j_ans.txt")
         #other_eigenvectors, other_eigenvalues = mykmeanssp.jacobi(our_mat)
         np.testing.assert_almost_equal(our_eigenvectors, other_eigenvectors, decimal=3)
         np.testing.assert_almost_equal(our_eigenvalues, other_eigenvalues, decimal=3)
