@@ -47,7 +47,7 @@ TESTS_MAIN_OBJECT       := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS           := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN              := $(MAIN)-debug
 
-.PHONY: build build-python-extension build-tests debug run-tests run-pytest run-black run-isort valgrind clean
+.PHONY: build build-python-extension build-tests build-devel-image debug run-tests run-pytest run-black run-isort valgrind clean
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -64,6 +64,10 @@ build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(S
 	$(CC) -o $(TESTS_MAIN) $+ $(CFLAGS) $(LIBS)
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(TESTS_MAIN)$(END_COLOR)\n";
+
+build-devel-image: Dockerfile
+	@echo -e "$(BROWN)Building Docker image $(END_COLOR)";
+	docker build -t mykmeanssp-devel:1.0.0 .
 
 debug: $(DEBUG_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
