@@ -7,7 +7,7 @@ N = 10
 def create_random_mats(create_new):
     for k in range(1, N+1):
         r = random.randint(5, 50)
-        c = random.randint(3, 10)
+        c = random.randint(3, 6)
         file_name = "testfiles/test" + str(k) + ".txt"
         if os.path.isfile(file_name):
             if create_new:
@@ -18,7 +18,11 @@ def create_random_mats(create_new):
         with open(file_name, "w") as f:
             for i in range(r):
                 for j in range(c):
-                    val = str(format(random.uniform(-300.0, 300.0), '.4f'))
+                    number = random.gauss(0, 0.4) 
+                    while number < -11 or number > 11:
+                        number = random.gauss(0, 0.4)
+                    number *= 11/3
+                    val = str(format(number, '.4f'))
                     if j + 1 == c:
                        val = val + "\n"
                     else:
@@ -53,4 +57,4 @@ def create_random_symmetric_mats(create_new):
 
 if __name__ == "__main__":
     create_random_mats(True)  
-    create_random_symmetric_mats(True)      
+    #create_random_symmetric_mats(True)      
