@@ -21,7 +21,6 @@ def create_random_mats(create_new):
                     number = random.gauss(0, 0.4) 
                     while number < -11 or number > 11:
                         number = random.gauss(0, 0.4)
-                    number *= 11/3
                     val = str(format(number, '.4f'))
                     if j + 1 == c:
                        val = val + "\n"
