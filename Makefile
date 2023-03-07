@@ -57,7 +57,7 @@ build: $(SRC_OBJECTS)
 
 build-python-extension: $(PYTHON_EXTENSION_C) $(PYTHON_EXTENSION_H) $(PYTHON_EXTENSION_SETUP)
 	@echo -en "$(BROWN)Building setup.py $(END_COLOR)";
-	python3 $(PYTHON_EXTENSION_SETUP) build_ext --build-lib $(PYTHON_SRC_DIR)
+	python3 $(PYTHON_EXTENSION_SETUP) build_ext --inplace
 
 build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(SRC_OBJECTS))
 	@echo -en "$(BROWN)LD $(END_COLOR)";
