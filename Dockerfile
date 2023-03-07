@@ -14,4 +14,4 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
 
 COPY . /usr/src
 WORKDIR /usr/src
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r requirements.txt -r requirements-dev.txt
