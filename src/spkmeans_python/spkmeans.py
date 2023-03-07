@@ -64,7 +64,7 @@ def read_matrix_from_file(file_path: Path) -> Matrix:
 
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
-        print(",".join(f"{x:4f}" for x in row))
+        print(",".join(format(x, '.4f') for x in row))
     print()
 
 

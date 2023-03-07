@@ -29,5 +29,5 @@ def read_vector_and_matrix_from_file(file_path: str):
 
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
-        print(",".join(f"{x:4f}" for x in row))
+        print(",".join(format(x, '.4f') for x in row))
     print()
