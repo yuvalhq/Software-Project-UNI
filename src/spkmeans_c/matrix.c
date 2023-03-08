@@ -3,7 +3,8 @@
 #endif
 
 #define COMMA ','
-#define NEWLINE '\n'
+#define NEWLINE1 '\n'
+#define NEWLINE2 '\r'
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -53,10 +54,13 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
 
         for (i = 0; i < (*m); i++) {
             vector[i] = strtod(line_idx, &line_idx);
-            if (*line_idx != COMMA && *line_idx != NEWLINE) {
+            if (*line_idx != COMMA && *line_idx != NEWLINE1 && *line_idx != NEWLINE2) {
                 FATAL_ERROR();
             }
             line_idx++;
+            if (*line_idx == NEWLINE1) {
+                line_idx++;
+            }
         }
 
         mat = (Matrix) realloc(mat, (++(*n)) * sizeof(Vector));

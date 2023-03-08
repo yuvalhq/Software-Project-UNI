@@ -148,11 +148,11 @@ double off_diagonal_square(Matrix mat, size_t n) {
 
 static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n) {
     size_t i, j;
-    for (i = 0; i < n; i++) {
+    for (j = 0; j < n; j++) {
         if (jr -> eigenvalues[i] == 0 && signbit(jr -> eigenvalues[i]) != 0) {
             jr -> eigenvalues[i] = 0.0;
-            for (j = 0; j < n; i++) {
-               jr -> eigenvectors[j][i] = -jr -> eigenvectors[j][i];
+            for (i = 0; i < n; i++) {
+               jr -> eigenvectors[i][j] = -(jr -> eigenvectors[i][j]);
             }
         }
     }
