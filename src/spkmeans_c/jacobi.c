@@ -48,8 +48,8 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
     res -> eigenvectors = v;
     res -> eigenvalues = matrix_diagonal_values(a, n);
-
-    _unsign_zero_in_jacobi_result(res, n);
+    
+    _unsign_zero_in_jacobi_result(res, n); 
 
     if (iter > 0) {
         free_matrix(a, n);
@@ -149,9 +149,9 @@ double off_diagonal_square(Matrix mat, size_t n) {
 static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n) {
     size_t i, j;
     for (j = 0; j < n; j++) {
-        if ((jr -> eigenvalues[i] > -0.0001 && jr -> eigenvalues[i] < 0) ||
-            (jr -> eigenvalues[i] == 0 && signbit(jr -> eigenvalues[i]) != 0)) {
-            jr -> eigenvalues[i] = 0.0;
+        if ((jr -> eigenvalues[j] == 0.0 && signbit(jr -> eigenvalues[j]) != 0) ||
+            (jr -> eigenvalues[j] > -0.0001 && jr -> eigenvalues[j] < 0.0)) {
+            jr -> eigenvalues[j] = 0.0;
             for (i = 0; i < n; i++) {
                jr -> eigenvectors[i][j] = -(jr -> eigenvectors[i][j]);
             }
