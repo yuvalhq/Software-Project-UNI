@@ -18,7 +18,6 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     double convergence = 1.0;
     Matrix a = mat, a_new = NULL;
     Matrix v = build_identity_matrix(n), v_new = NULL;
-    Matrix rotation_matrix = NULL;
     Coordinate *pivot = NULL;
     JacobiParameters *jp = NULL;
     JacobiResult *res = NULL;
@@ -26,14 +25,12 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
-        rotation_matrix = build_rotation_matrix(pivot, jp, n);
         a_new = transform(a, pivot, jp, n);
-        v_new = matrix_mul(v, rotation_matrix, n);
+        v_new = mat_mul_left_jacobi(v, pivot, jp, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
 
         free(pivot);
         free(jp);
-        free_matrix(rotation_matrix, n);
         free_matrix(v, n);
         if (iter > 0) {
             free_matrix(a, n);
@@ -110,21 +107,21 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     return mat_new;
 }
 
-Matrix build_rotation_matrix(Coordinate *pivot, JacobiParameters *jp, size_t n) {
-    Matrix res = build_identity_matrix(n);
+Matrix mat_mul_left_jacobi(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
+    size_t r;
+    size_t i = pivot -> i;
+    size_t j = pivot -> j;
+    double c = jp -> c;
+    double s = jp -> s;
 
-    res[pivot -> i][pivot -> i] = jp -> c;
-    res[pivot -> j][pivot -> j] = jp -> c;
+    Matrix mat_new = copy_matrix(mat, n);
 
-    if (pivot -> i > pivot -> j) {
-        res[pivot -> i][pivot -> j] = -(jp -> s);
-        res[pivot -> j][pivot -> i] = jp -> s;
-    } else {
-        res[pivot -> i][pivot -> j] = jp -> s;
-        res[pivot -> j][pivot -> i] = -(jp -> s);
+    for (r = 0; r < n; r++) {
+        mat_new[r][i] = c * mat[r][i] - s * mat[r][j];
+        mat_new[r][j] = c * mat[r][j] + s * mat[r][i];
     }
-
-    return res;
+    
+    return mat_new;
 }
 
 double off_diagonal_square_diff(Matrix mat1, Matrix mat2, size_t n) {
