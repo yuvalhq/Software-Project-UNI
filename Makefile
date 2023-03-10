@@ -47,7 +47,11 @@ TESTS_MAIN_OBJECT       := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS           := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN              := $(MAIN)-debug
 
-.PHONY: build build-python-extension build-tests generate-requirements build-devel-image debug run-tests run-pytest run-black run-isort valgrind clean
+.PHONY: pre-commit build build-python-extension build-tests generate-requirements build-devel-image debug run-tests run-pytest run-black run-isort valgrind clean
+
+pre-commit:
+	@which pre-commit &>/dev/null || (echo "ERROR: Please install pre-commit first" ; exit 1)
+	pre-commit install
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";

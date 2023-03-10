@@ -23,13 +23,13 @@ int main(int argc, char *argv[]) {
     size_t n = 0, m = 0;
     Matrix input = NULL, wam = NULL, ddg = NULL, gl = NULL;
     JacobiResult *jacobi_result = NULL;
-    
+
     CommandLineArguments *args = handle_args(argc, argv);
     input = build_matrix_from_file(args -> input_file_path, &n, &m);
 
     if (args -> goal == JACOBI) {
         jacobi_result = jacobi(input, n);
-        
+
         print_vector(jacobi_result -> eigenvalues, n);
         print_matrix(jacobi_result -> eigenvectors, n, n);
 
@@ -80,7 +80,7 @@ static Goal create_goal_from_name(char *goal_name) {
             return (Goal) i;
         }
     }
-    
+
     return UNKNOWN;
 }
 

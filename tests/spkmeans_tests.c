@@ -16,7 +16,7 @@ static MunitResult test_strcount(const MunitParameter params[], void* data) {
 }
 
 static MunitTest test_suite_tests[] = {
-    { 
+    {
         .name = (char*) "/strutils/test_strcount",
         .test = test_strcount,
         .setup = NULL,

@@ -30,7 +30,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         a_new = transform(a, pivot, jp, n);
         v_new = matrix_mul(v, rotation_matrix, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
-    
+
         free(pivot);
         free(jp);
         free_matrix(rotation_matrix, n);
@@ -101,7 +101,7 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
             mat_new[j][r] = mat_new[r][j];
         }
     }
-    
+
     mat_new[i][i] = pow(c, 2) * mat[i][i] + pow(s, 2) * mat[j][j] - 2 * s * c * mat[i][j];
     mat_new[j][j] = pow(s, 2) * mat[i][i] + pow(c, 2) * mat[j][j] + 2 * s * c * mat[i][j];
     mat_new[i][j] = 0.0;
