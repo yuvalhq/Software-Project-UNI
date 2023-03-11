@@ -49,7 +49,7 @@ static PyObject* ddg_wrapper(PyObject *self, PyObject *args) {
     ddg = diagonal_degree_matrix(wam, n);
 
     res = to_python_matrix(ddg, n, n);
-    
+
     free_matrix(mat, n);
     free_matrix(wam, n);
     free_matrix(ddg, n);
@@ -79,7 +79,7 @@ static PyObject* gl_wrapper(PyObject *self, PyObject *args) {
     gl = graph_laplacian(ddg, wam, n);
 
     res = to_python_matrix(gl, n, n);
-    
+
     free_matrix(mat, n);
     free_matrix(wam, n);
     free_matrix(ddg, n);
@@ -111,7 +111,7 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     res = PyTuple_New(2);
     PyTuple_SetItem(res, 0, eigenvectors);
     PyTuple_SetItem(res, 1, eigenvalues);
-    
+
     free_matrix(mat, n);
     free_matrix(jacobi_result -> eigenvectors, n);
     free(jacobi_result -> eigenvalues);

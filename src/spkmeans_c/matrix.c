@@ -16,7 +16,7 @@ Matrix build_matrix(size_t n) {
     Matrix mat = (Matrix) malloc(n * sizeof(Vector));
 
     for (i = 0; i < n; i++) {
-        mat[i] = (Vector) calloc(n, sizeof(double)); 
+        mat[i] = (Vector) calloc(n, sizeof(double));
     }
     return mat;
 }
@@ -45,7 +45,7 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
 
     while (getline(&line, &line_len, file) != -1) {
         if (*m == 0) {
-           *m = strcount(line, COMMA) + 1; 
+           *m = strcount(line, COMMA) + 1;
         }
 
         vector = (Vector) calloc(*m, sizeof(double));;

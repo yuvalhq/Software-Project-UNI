@@ -47,7 +47,11 @@ TESTS_MAIN_OBJECT       := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS           := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN              := $(MAIN)-debug
 
-.PHONY: build build-python-extension build-tests debug run-tests run-pytest run-black run-isort valgrind clean
+.PHONY: pre-commit build build-python-extension build-tests generate-requirements build-devel-image debug run-tests run-pytest run-black run-isort valgrind clean
+
+pre-commit:
+	@which pre-commit &>/dev/null || (echo "ERROR: Please install pre-commit first" ; exit 1)
+	pre-commit install
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -57,13 +61,22 @@ build: $(SRC_OBJECTS)
 
 build-python-extension: $(PYTHON_EXTENSION_C) $(PYTHON_EXTENSION_H) $(PYTHON_EXTENSION_SETUP)
 	@echo -en "$(BROWN)Building setup.py $(END_COLOR)";
-	python3 $(PYTHON_EXTENSION_SETUP) build_ext --build-lib $(PYTHON_SRC_DIR)
+	python3 $(PYTHON_EXTENSION_SETUP) build_ext --inplace
 
 build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(SRC_OBJECTS))
 	@echo -en "$(BROWN)LD $(END_COLOR)";
 	$(CC) -o $(TESTS_MAIN) $+ $(CFLAGS) $(LIBS)
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(TESTS_MAIN)$(END_COLOR)\n";
+
+generate-requirements: Pipfile
+	@echo -e "$(BROWN)Generating requirements $(END_COLOR)";
+	@pipenv requirements > requirements.txt
+	@pipenv requirements --dev > requirements-dev.txt
+
+build-devel-image: Dockerfile generate-requirements
+	@echo -e "$(BROWN)Building Docker image $(END_COLOR)";
+	docker build -t mykmeanssp-devel:1.0.0 .
 
 debug: $(DEBUG_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
