@@ -107,18 +107,23 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     return mat_new;
 }
 
+/**
+ * An efficient implementation of the Jacobi interations for finding the eigenvectors.
+ * Taken from a paper we found at: http://phys.uri.edu/nigh/NumRec/bookfpdf/f11-1.pdf
+ * in page 459.
+*/
 Matrix mat_mul_left_jacobi(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
     size_t r;
-    size_t i = pivot -> i;
-    size_t j = pivot -> j;
+    size_t p = pivot -> i;
+    size_t q = pivot -> j;
     double c = jp -> c;
     double s = jp -> s;
 
     Matrix mat_new = copy_matrix(mat, n);
 
     for (r = 0; r < n; r++) {
-        mat_new[r][i] = c * mat[r][i] - s * mat[r][j];
-        mat_new[r][j] = c * mat[r][j] + s * mat[r][i];
+        mat_new[r][p] = c * mat[r][p] - s * mat[r][q];
+        mat_new[r][q] = c * mat[r][q] + s * mat[r][p];
     }
 
     return mat_new;
