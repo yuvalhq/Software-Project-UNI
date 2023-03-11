@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "common.h"
 #include "vector.h"
 
 double squared_euclidean_distance(Vector p, Vector q, size_t m) {
@@ -14,12 +15,7 @@ double squared_euclidean_distance(Vector p, Vector q, size_t m) {
 void print_vector(Vector vector, size_t m) {
     size_t i;
     for (i = 0; i < m; i++) {
-        if (vector[i] > -0.0001 && vector[i] <= 0){
-            printf("0.0000");
-        }
-        else {
-          printf("%.4f", vector[i]);
-        }
+        print_float_with_precision_4(vector[i]);
         if (i < m - 1) {
             printf(",");
         }

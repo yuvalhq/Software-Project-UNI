@@ -26,7 +26,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
         a_new = transform(a, pivot, jp, n);
-        v_new = mat_mul_left_jacobi(v, pivot, jp, n);
+        v_new = jacobi_calc_eigenvectors_iteration(v, pivot, jp, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
 
         free(pivot);
@@ -112,7 +112,7 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
  * Taken from a paper we found at: http://phys.uri.edu/nigh/NumRec/bookfpdf/f11-1.pdf
  * in page 459.
 */
-Matrix mat_mul_left_jacobi(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
+Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
     size_t r;
     size_t p = pivot -> i;
     size_t q = pivot -> j;

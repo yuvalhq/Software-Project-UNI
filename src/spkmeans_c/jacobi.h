@@ -20,7 +20,7 @@ JacobiResult *jacobi(Matrix mat, size_t n);
 Coordinate *get_pivot_coord(Matrix mat, size_t n);
 JacobiParameters *get_jacobi_parameters(Matrix mat, Coordinate *pivot);
 Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n);
-Matrix mat_mul_left_jacobi(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n);
+Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n);
 double off_diagonal_square_diff(Matrix mat1, Matrix mat2, size_t n);
 double off_diagonal_square(Matrix mat, size_t n);
 

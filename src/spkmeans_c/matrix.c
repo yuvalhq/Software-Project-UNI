@@ -3,8 +3,8 @@
 #endif
 
 #define COMMA ','
-#define NEWLINE1 '\n'
-#define NEWLINE2 '\r'
+#define LINE_FEED '\n'
+#define CARRIAGE_RETURN '\r'
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -54,11 +54,12 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
 
         for (i = 0; i < (*m); i++) {
             vector[i] = strtod(line_idx, &line_idx);
-            if (*line_idx != COMMA && *line_idx != NEWLINE1 && *line_idx != NEWLINE2) {
+            if (*line_idx != COMMA && *line_idx != LINE_FEED &&
+                *line_idx != CARRIAGE_RETURN) {
                 FATAL_ERROR();
             }
             line_idx++;
-            if (*line_idx == NEWLINE1) {
+            if (*line_idx == LINE_FEED) {
                 line_idx++;
             }
         }

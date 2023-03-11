@@ -14,15 +14,5 @@ def read_matrix_from_file(file_path: str):
 
 
 def read_vector_and_matrix_from_file(file_path: str):
-    vec = []
-    mat = []
-    got_vec = False
-    with open(file_path, "r") as fd:
-        for line in fd.readlines():
-            row = [float(x) for x in line.split(",")]
-            if not got_vec:
-                vec = row
-                got_vec = True
-            else:
-                mat.append(row)
-    return vec, mat
+    mat = read_matrix_from_file(file_path)
+    return mat[0], mat[1:]
