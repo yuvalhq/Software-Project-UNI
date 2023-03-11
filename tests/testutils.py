@@ -3,6 +3,7 @@ from typing import List
 Vector = List[float]
 Matrix = List[List[float]]
 
+
 def read_matrix_from_file(file_path: str):
     result = []
     with open(file_path, "r") as fd:
@@ -25,9 +26,3 @@ def read_vector_and_matrix_from_file(file_path: str):
             else:
                 mat.append(row)
     return vec, mat
-
-
-def print_matrix(matrix: Matrix) -> None:
-    for row in matrix:
-        print(",".join(format(x, '.4f') for x in row))
-    print()

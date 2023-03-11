@@ -45,8 +45,8 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
     res -> eigenvectors = v;
     res -> eigenvalues = matrix_diagonal_values(a, n);
-    
-    _unsign_zero_in_jacobi_result(res, n); 
+
+    _unsign_zero_in_jacobi_result(res, n);
 
     if (iter > 0) {
         free_matrix(a, n);
@@ -120,7 +120,7 @@ Matrix mat_mul_left_jacobi(Matrix mat, Coordinate *pivot, JacobiParameters *jp, 
         mat_new[r][i] = c * mat[r][i] - s * mat[r][j];
         mat_new[r][j] = c * mat[r][j] + s * mat[r][i];
     }
-    
+
     return mat_new;
 }
 

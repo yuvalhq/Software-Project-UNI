@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
 
     if (args -> goal == JACOBI) {
         jacobi_result = jacobi(input, n);
-        
+
         print_vector(jacobi_result -> eigenvalues, n);
         print_matrix(jacobi_result -> eigenvectors, n, n);
 

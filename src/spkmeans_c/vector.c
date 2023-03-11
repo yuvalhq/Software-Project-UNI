@@ -18,7 +18,7 @@ void print_vector(Vector vector, size_t m) {
             printf("0.0000");
         }
         else {
-          printf("%.4f", vector[i]);  
+          printf("%.4f", vector[i]);
         }
         if (i < m - 1) {
             printf(",");
