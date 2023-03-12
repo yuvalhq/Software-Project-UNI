@@ -15,7 +15,7 @@ double squared_euclidean_distance(Vector p, Vector q, size_t m) {
 void print_vector(Vector vector, size_t m) {
     size_t i;
     for (i = 0; i < m; i++) {
-        print_float_with_precision_4(vector[i]);
+        printf("%.4f", vector[i]);
         if (i < m - 1) {
             printf(",");
         }

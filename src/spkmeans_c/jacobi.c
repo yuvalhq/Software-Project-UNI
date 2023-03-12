@@ -43,11 +43,12 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
-    res -> eigenvectors = v;
+    res -> eigenvectors = transpose(v, n);
     res -> eigenvalues = matrix_diagonal_values(a, n);
 
     _unsign_zero_in_jacobi_result(res, n);
 
+    free_matrix(v, n);
     if (iter > 0) {
         free_matrix(a, n);
     }

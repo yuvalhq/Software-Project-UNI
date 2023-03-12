@@ -31,7 +31,10 @@ int main(int argc, char *argv[]) {
         jacobi_result = jacobi(input, n);
 
         print_vector(jacobi_result -> eigenvalues, n);
-        print_matrix(jacobi_result -> eigenvectors, n, n);
+        print_transposed_matrix(
+            jacobi_result -> eigenvectors,
+            n
+        ); /* Need to print the eigenvectors as columns */
 
         free_matrix(input, n);
         free_matrix(jacobi_result -> eigenvectors, n);

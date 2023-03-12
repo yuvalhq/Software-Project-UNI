@@ -140,6 +140,12 @@ void print_matrix(Matrix mat, size_t n, size_t m) {
     }
 }
 
+void print_transposed_matrix(Matrix mat, size_t n) {
+    Matrix transpose_mat = transpose(mat, n);
+    print_matrix(transpose_mat, n, n);
+    free_matrix(transpose_mat, n);
+}
+
 void free_matrix(Matrix mat, size_t n) {
     size_t i;
     for (i = 0; i < n; i++) {
