@@ -17,6 +17,10 @@ compare_input_output_test = pytest.mark.parametrize(
             str(Path(__file__).parent.joinpath("testfiles").resolve()),
             str(Path(__file__).parent.joinpath("testfiles/ofek_s").resolve()),
         ),
+        (
+            str(Path(__file__).parent.joinpath("testfiles").resolve()),
+            str(Path(__file__).parent.joinpath("testfiles/ofek_2").resolve()),
+        ),
     ],
 )
 
@@ -33,7 +37,7 @@ def test_wam(inputs_folder: str, output_folder: str):
             str(Path(output_folder).joinpath(f"test{i}_wam.txt"))
         )
         # other_wam = mykmeanssp.wam(our_mat)
-        np.testing.assert_almost_equal(our_wam, other_wam, decimal=3)
+        np.testing.assert_almost_equal(our_wam, other_wam, decimal=4)
 
 
 @compare_input_output_test
@@ -48,7 +52,7 @@ def test_ddg(inputs_folder: str, output_folder: str):
             str(Path(output_folder).joinpath(f"test{i}_ddg.txt"))
         )
         # other_ddg = mykmeanssp.ddg(our_mat)
-        np.testing.assert_almost_equal(our_ddg, other_ddg, decimal=3)
+        np.testing.assert_almost_equal(our_ddg, other_ddg, decimal=4)
 
 
 @compare_input_output_test
@@ -63,7 +67,7 @@ def test_gl(inputs_folder: str, output_folder: str):
             str(Path(output_folder).joinpath(f"test{i}_gl.txt"))
         )
         # other_gl = mykmeanssp.gl(our_mat)
-        np.testing.assert_almost_equal(our_gl, other_gl, decimal=3)
+        np.testing.assert_almost_equal(our_gl, other_gl, decimal=4)
 
 
 @compare_input_output_test
@@ -78,5 +82,5 @@ def test_jacobi(inputs_folder: str, output_folder: str):
             str(Path(output_folder).joinpath(f"test{i}_j_ans.txt"))
         )
         # other_eigenvectors, other_eigenvalues = mykmeanssp.jacobi(our_mat)
-        np.testing.assert_almost_equal(our_eigenvectors, other_eigenvectors, decimal=3)
-        np.testing.assert_almost_equal(our_eigenvalues, other_eigenvalues, decimal=3)
+        np.testing.assert_almost_equal(our_eigenvectors, other_eigenvectors, decimal=4)
+        np.testing.assert_almost_equal(our_eigenvalues, other_eigenvalues, decimal=4)
