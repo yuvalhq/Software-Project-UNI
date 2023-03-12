@@ -12,8 +12,12 @@ Matrix = List[List[float]]
     [
         (
             [[1.0, 2.0, 3.0], [2.0, 3.0, 11.0], [3.0, 11.0, 5.0]],
-            [0.186, -7.084, 15.898],
-            [[0.97, -0.211, -0.122], [0.071, 0.725, -0.685], [0.233, 0.656, 0.718]],
+            [0.1864, -7.0851, 15.8986],
+            [
+                [0.9698, -0.2109, -0.1224],
+                [0.0725, 0.7286, -0.6811],
+                [0.2328, 0.6517, 0.7219],
+            ],
         ),
         (
             [[3.0, 2.0, 4.0], [2.0, 0.0, 2.0], [4.0, 2.0, 3.0]],
@@ -30,7 +34,7 @@ def test_jacobi_algorithm(
     matrix: Matrix, expected_eigenvalues: List[float], expected_eigenvectors: Matrix
 ):
     actual_eigenvectors, actual_eigenvalues = mykmeanssp.jacobi(matrix)
-    np.testing.assert_almost_equal(expected_eigenvalues, actual_eigenvalues, decimal=3)
+    np.testing.assert_almost_equal(expected_eigenvalues, actual_eigenvalues, decimal=4)
     np.testing.assert_almost_equal(
-        expected_eigenvectors, actual_eigenvectors, decimal=3
+        expected_eigenvectors, actual_eigenvectors, decimal=4
     )
