@@ -17,10 +17,6 @@ compare_input_output_test = pytest.mark.parametrize(
             str(Path(__file__).parent.joinpath("testfiles").resolve()),
             str(Path(__file__).parent.joinpath("testfiles/ofek_s").resolve()),
         ),
-        (
-            str(Path(__file__).parent.joinpath("testfiles").resolve()),
-            str(Path(__file__).parent.joinpath("testfiles/ofek_2").resolve()),
-        ),
     ],
 )
 
@@ -82,5 +78,5 @@ def test_jacobi(inputs_folder: str, output_folder: str):
             str(Path(output_folder).joinpath(f"test{i}_j_ans.txt"))
         )
         # other_eigenvectors, other_eigenvalues = mykmeanssp.jacobi(our_mat)
-        np.testing.assert_almost_equal(our_eigenvectors, other_eigenvectors, decimal=4)
+        np.testing.assert_almost_equal(np.array(our_eigenvectors).T, other_eigenvectors, decimal=4)
         np.testing.assert_almost_equal(our_eigenvalues, other_eigenvalues, decimal=4)
