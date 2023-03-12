@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def compute_probabilities(dx_arr: np.ndarray, N: int) -> np.ndarray:
     return probabilities
 
 
-def kmeanspp(points: np.ndarray, k: int) -> np.ndarray:
+def kmeanspp(points: np.ndarray, k: int) -> Tuple[np.ndarray, List[int]]:
     np.random.seed(0)
     N, vec_len = points.shape
 
@@ -55,4 +55,4 @@ def kmeanspp(points: np.ndarray, k: int) -> np.ndarray:
         centroids[i] = points[new_center]
 
     # step 5
-    return centroids
+    return centroids, centroids_idxs

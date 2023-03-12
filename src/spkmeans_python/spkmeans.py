@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Tuple, Optional
 
 import numpy as np
 from kmeanspp import kmeanspp
@@ -10,7 +10,7 @@ from kmeanspp import kmeanspp
 import mykmeanssp
 
 Matrix = List[List[float]]
-
+Vector = List[float]
 
 class Goal(Enum):
     SPK = auto()
@@ -65,16 +65,19 @@ def read_matrix_from_file(file_path: Path) -> Matrix:
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix: 
         print(",".join(f"{x:.4f}" for x in row))
-    print()
+   
+ 
+def print_int_vector(vector: Vector) -> None:
+    print(",".join(str(int(x)) for x in vector))
 
 
-def spk(matrix: Matrix, k: Optional[int]) -> Matrix:
+def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, Vector]:
     gl = mykmeanssp.gl(matrix)
     eigenvectors, eigenvalues = mykmeanssp.jacobi(gl)
     k = k or eigengap_heuristic(eigenvalues)
     transposed_eigenvectors_np = np.array(eigenvectors).T
-    result = kmeanspp(transposed_eigenvectors_np, k)
-    return result.tolist()
+    result, centroids_idxs = kmeanspp(transposed_eigenvectors_np, k)
+    return result.tolist(), centroids_idxs
 
 
 def main():
@@ -89,7 +92,8 @@ def main():
     cmd_args = handle_args()
     input_matrix = read_matrix_from_file(cmd_args.file_path)
     if cmd_args.goal == Goal.SPK:
-        output = spk(input_matrix, cmd_args.k)
+        output, centroids_idxs = spk(input_matrix, cmd_args.k)
+        print_int_vector(centroids_idxs)
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)
