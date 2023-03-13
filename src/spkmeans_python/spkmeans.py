@@ -63,12 +63,16 @@ def read_matrix_from_file(file_path: Path) -> Matrix:
 
 
 def print_matrix(matrix: Matrix) -> None:
-    for row in matrix: 
-        print(",".join(f"{x:.4f}" for x in row))
+    for row in matrix:
+        print_vector(row)
    
  
-def print_int_vector(vector: Vector) -> None:
-    print(",".join(str(int(x)) for x in vector))
+def print_vector(vector: Vector) -> None:
+    print(",".join(f"{x:.4f}" for x in vector))
+
+
+def print_int_vector(vector: List[int]) -> None:
+    print(",".join(str(x) for x in vector))
 
 
 def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, Vector]:
@@ -94,6 +98,12 @@ def main():
     if cmd_args.goal == Goal.SPK:
         output, centroids_idxs = spk(input_matrix, cmd_args.k)
         print_int_vector(centroids_idxs)
+    
+    elif cmd_args.goal == Goal.JACOBI:
+        eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
+        output = np.array(eigenvectors).T.tolist()
+        print_vector(eigenvalues)
+            
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)
