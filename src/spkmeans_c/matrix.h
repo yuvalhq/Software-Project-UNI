@@ -20,7 +20,7 @@ Matrix matrix_mul(Matrix left, Matrix right, size_t n);
 Matrix transpose(Matrix mat, size_t n);
 Vector matrix_diagonal_values(Matrix mat, size_t n);
 void print_matrix(Matrix mat, size_t n, size_t m);
-void print_transposed_matrix(Matrix mat, size_t n);
+void print_transposed_matrix(Matrix mat, size_t n, size_t m);
 void free_matrix(Matrix mat, size_t n);
 
 #endif

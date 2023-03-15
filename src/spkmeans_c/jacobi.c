@@ -5,6 +5,8 @@
 #define MAX_ROTATIONS 100
 #define EPSILON 0.00001
 #define SIGN(x) (((x) < 0) ? (-1) : (1))
+#define _is_negative_zero(x) ((x == 0.0 && signbit(x != 0) || \
+                              (x > -0.0001 && x < 0.0)))
 
 #include <math.h>
 #include <stdlib.h>
@@ -152,8 +154,7 @@ double off_diagonal_square(Matrix mat, size_t n) {
 static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n) {
     size_t i, j;
     for (i = 0; i < n; i++) {
-        if ((jr -> eigenvalues[i] == 0.0 && signbit(jr -> eigenvalues[i]) != 0) ||
-            (jr -> eigenvalues[i] > -0.0001 && jr -> eigenvalues[i] < 0.0)) {
+        if (_is_negative_zero(jr -> eigenvalues[i])) {
             jr -> eigenvalues[i] = 0.0;
             for (j = 0; j < n; j++) {
                jr -> eigenvectors[i][j] = -(jr -> eigenvectors[i][j]);

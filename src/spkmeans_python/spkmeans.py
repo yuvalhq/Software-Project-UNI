@@ -71,7 +71,7 @@ def print_vector(vector: Vector) -> None:
     print(",".join(f"{x:.4f}" for x in vector))
 
 
-def print_int_vector(vector: List[int]) -> None:
+def print_int_list(vector: List[int]) -> None:
     print(",".join(str(x) for x in vector))
 
 
@@ -97,7 +97,7 @@ def main():
     input_matrix = read_matrix_from_file(cmd_args.file_path)
     if cmd_args.goal == Goal.SPK:
         output, centroids_idxs = spk(input_matrix, cmd_args.k)
-        print_int_vector(centroids_idxs)
+        print_int_list(centroids_idxs)
     
     elif cmd_args.goal == Goal.JACOBI:
         eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
