@@ -8,7 +8,7 @@ import numpy as np
 
 import mykmeanssp
 
-from .kmeanspp import kmeanspp
+from kmeanspp import kmeanspp
 
 Vector = List[float]
 Matrix = List[Vector]
@@ -52,9 +52,17 @@ def handle_args() -> CommandLineArguments:
 def eigengap_heuristic(eigenvalues: List[float]) -> int:
     eigenvalues_sorted = np.sort(eigenvalues)
     deltas = np.abs(np.diff(eigenvalues_sorted))
-    return int(np.argmax(deltas))
+    n = len(eigenvalues)
+    return int(np.argmax(deltas[:n//2])) + 1
 
 
+def get_first_k_eigenvectors(eigenvectors: Matrix, eigenvalues: Vector, k: int) -> Matrix:
+    eigenvalues_col = np.array(eigenvalues).reshape(-1, 1)
+    jacobi_res_t = np.hstack((eigenvalues_col, eigenvectors))
+    sorted_jacobi_res_t = jacobi_res_t[np.argsort(jacobi_res_t[:, 0])]
+    return sorted_jacobi_res_t[:k, 1:]
+    
+    
 def read_matrix_from_file(file_path: Path) -> Matrix:
     result = []
     with open(file_path, "r") as fd:
@@ -77,15 +85,6 @@ def print_int_list(integers: List[int]) -> None:
     print(",".join(str(x) for x in integers))
 
 
-def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, List[int]]:
-    gl = mykmeanssp.gl(matrix)
-    eigenvectors, eigenvalues = mykmeanssp.jacobi(gl)
-    k = k or eigengap_heuristic(eigenvalues)
-    transposed_eigenvectors_np = np.array(eigenvectors).T
-    result, centroids_idxs = kmeanspp(transposed_eigenvectors_np, k)
-    return result.tolist(), centroids_idxs
-
-
 def main():
     goal_map = {
         Goal.WAM: mykmeanssp.wam,
@@ -98,7 +97,9 @@ def main():
     cmd_args = handle_args()
     input_matrix = read_matrix_from_file(cmd_args.file_path)
     if cmd_args.goal == Goal.SPK:
-        output, centroids_idxs = spk(input_matrix, cmd_args.k)
+        u = mykmeanssp.spk(input_matrix, cmd_args.k)
+        result, centroids_idxs = kmeanspp(u, cmd_args.k)
+        output = result.tolist()
         print_int_list(centroids_idxs)
 
     elif cmd_args.goal == Goal.JACOBI:

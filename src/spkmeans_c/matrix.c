@@ -22,6 +22,16 @@ Matrix build_matrix(size_t n) {
     return mat;
 }
 
+Matrix build_nonsquare_matrix(size_t n, size_t m) {
+    size_t i;
+    Matrix mat = (Matrix) malloc(n * sizeof(Vector));
+
+    for (i = 0; i < n; i++) {
+        mat[i] = (Vector) calloc(m, sizeof(double));
+    }
+    return mat;
+}
+
 Matrix build_identity_matrix(size_t n) {
     size_t i;
     Matrix mat = build_matrix(n);
