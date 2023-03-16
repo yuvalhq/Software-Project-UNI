@@ -124,4 +124,9 @@ endif
 		$(DEBUG_MAIN) $(args)
 
 clean:
-	@rm -rvf $(BINDIR)/* *.so
+	@find -name __pycache__ \
+		-o -name .mypy_cache \
+		-o -name build \
+		-o -name .pytest_cache \
+		-o -name *.egg-info \
+		| xargs rm -rfv
