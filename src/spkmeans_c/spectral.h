@@ -20,6 +20,5 @@ SpectralResult *spectral_clustering(Matrix mat, size_t k, size_t n, size_t m);
 size_t eigengap_heuristic(Vector vec, size_t n);
 int compare_doubles(const void *a, const void *b);
 Matrix get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n);
-int compare_vectors(const void* a, const void* b);
 
 #endif
