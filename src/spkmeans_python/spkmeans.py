@@ -76,7 +76,7 @@ def print_int_list(vector: List[int]) -> None:
     print(",".join(str(x) for x in vector))
 
 
-def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, Vector]:
+def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, List[int]]:
     gl = mykmeanssp.gl(matrix)
     eigenvectors, eigenvalues = mykmeanssp.jacobi(gl)
     k = k or eigengap_heuristic(eigenvalues)
