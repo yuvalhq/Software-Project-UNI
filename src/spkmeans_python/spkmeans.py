@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 from kmeanspp import kmeanspp
@@ -11,6 +11,7 @@ import mykmeanssp
 
 Matrix = List[List[float]]
 Vector = List[float]
+
 
 class Goal(Enum):
     SPK = auto()
@@ -65,8 +66,8 @@ def read_matrix_from_file(file_path: Path) -> Matrix:
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
         print_vector(row)
-   
- 
+
+
 def print_vector(vector: Vector) -> None:
     print(",".join(f"{x:.4f}" for x in vector))
 
@@ -98,12 +99,12 @@ def main():
     if cmd_args.goal == Goal.SPK:
         output, centroids_idxs = spk(input_matrix, cmd_args.k)
         print_int_list(centroids_idxs)
-    
+
     elif cmd_args.goal == Goal.JACOBI:
         eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
         output = np.array(eigenvectors).T.tolist()
         print_vector(eigenvalues)
-            
+
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)
