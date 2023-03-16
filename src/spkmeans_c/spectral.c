@@ -45,9 +45,10 @@ Matrix graph_laplacian(Matrix d, Matrix w, size_t n) {
     return matrix_sub(d, w, n);
 }
 
-Matrix spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
+SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     Matrix wam, ddg, gl, u;
     JacobiResult *jacobi_result = NULL;
+    SpectralResult *spectral_result = NULL;
 
     wam = weighted_adjacency_matrix(mat, n, m);
     ddg = diagonal_degree_matrix(wam, n);
@@ -59,7 +60,9 @@ Matrix spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     }
 
     u = get_first_k_eigenvectors(jacobi_result, k, n);
-    
+    spectral_result -> k = k;
+    spectral_result -> u = u;
+
     free_matrix(wam, n);
     free_matrix(ddg, n); 
     free_matrix(gl, n);
@@ -67,7 +70,7 @@ Matrix spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     free(jacobi_result -> eigenvalues);
     free(jacobi_result);
 
-    return u;
+    return spectral_result;
 }
 
 int eigengap_heuristic(Vector vector, size_t n) {

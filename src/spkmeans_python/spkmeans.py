@@ -83,8 +83,8 @@ def main():
     cmd_args = handle_args()
     input_matrix = read_matrix_from_file(cmd_args.file_path)
     if cmd_args.goal == Goal.SPK:
-        u = mykmeanssp.spk(input_matrix, cmd_args.k)
-        result, centroids_idxs = kmeanspp(u, cmd_args.k)
+        u, k = mykmeanssp.spk(input_matrix, cmd_args.k)
+        result, centroids_idxs = kmeanspp(np.array(u).T, k)
         output = result.tolist()
         print_int_list(centroids_idxs)
 
