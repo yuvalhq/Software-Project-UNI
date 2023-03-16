@@ -45,11 +45,10 @@ Matrix graph_laplacian(Matrix d, Matrix w, size_t n) {
     return matrix_sub(d, w, n);
 }
 
-SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
+SpectralResult *spectral_clustering(Matrix mat, size_t k, size_t n, size_t m) {
     Matrix wam = NULL;
     Matrix ddg = NULL;
     Matrix gl = NULL;
-    Matrix u = NULL;
     JacobiResult *jacobi_result = NULL;
     SpectralResult *spectral_result = NULL;
 
@@ -62,9 +61,8 @@ SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
         k = eigengap_heuristic(jacobi_result -> eigenvalues, n);
     }
 
-    u = get_first_k_eigenvectors(jacobi_result, k, n);
     spectral_result -> k = k;
-    spectral_result -> u = u;
+    spectral_result -> u = get_first_k_eigenvectors(jacobi_result, k, n);
 
     free_matrix(wam, n);
     free_matrix(ddg, n); 
@@ -76,7 +74,7 @@ SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     return spectral_result;
 }
 
-int eigengap_heuristic(Vector eigenvalues, size_t n) {
+size_t eigengap_heuristic(Vector eigenvalues, size_t n) {
     size_t i;
     size_t max_index = 0;
     double max_delta = 0.0;
@@ -96,7 +94,7 @@ int eigengap_heuristic(Vector eigenvalues, size_t n) {
     }
     free(deltas);
     free(sorted_eigenvalues);
-    return (int) (max_index + 1);
+    return max_index + 1;
 }
 
 int compare_doubles(const void *a, const void *b) {
@@ -111,7 +109,7 @@ int compare_doubles(const void *a, const void *b) {
     }
 }
 
-Matrix get_first_k_eigenvectors(JacobiResult *jacobi_result, int k, size_t n) {
+Matrix get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n) {
     size_t i, j;
     Matrix extended_eigenvectors_mat  = build_matrix(n, n + 1);
     Matrix u = build_matrix(n, n);

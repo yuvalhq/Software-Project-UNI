@@ -5,7 +5,7 @@
 
 Vector copy_vector(Vector vector, size_t n) {
     size_t i;
-    Vector copy = malloc(n * sizeof(double));
+    Vector copy = (Vector) calloc(n, sizeof(double));
 
     for (i = 0; i < n; i++) {
         copy[i] = vector[i];
