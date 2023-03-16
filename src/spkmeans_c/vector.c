@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "common.h"
 #include "vector.h"
 
 double squared_euclidean_distance(Vector p, Vector q, size_t m) {

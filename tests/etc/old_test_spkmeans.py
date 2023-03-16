@@ -1,8 +1,9 @@
 from typing import List
 
-import mykmeanssp
 import numpy as np
 import pytest
+
+import mykmeanssp
 
 Matrix = List[List[float]]
 

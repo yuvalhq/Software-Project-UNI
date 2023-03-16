@@ -14,6 +14,8 @@ pipenv = "*"
 black = "*"
 isort = "*"
 pre-commit = "*"
+mypy = "*"
+types-setuptools = "*"
 
 [requires]
 python_version = "3.10"

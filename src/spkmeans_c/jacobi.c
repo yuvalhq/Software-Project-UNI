@@ -5,6 +5,8 @@
 #define MAX_ROTATIONS 100
 #define EPSILON 0.00001
 #define SIGN(x) (((x) < 0) ? (-1) : (1))
+#define _is_negative_zero(x) ((x == 0.0 && signbit(x) != 0) || \
+                              (x > -0.0001 && x < 0.0))
 
 #include <math.h>
 #include <stdlib.h>
@@ -18,7 +20,6 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     double convergence = 1.0;
     Matrix a = mat, a_new = NULL;
     Matrix v = build_identity_matrix(n), v_new = NULL;
-    Matrix rotation_matrix = NULL;
     Coordinate *pivot = NULL;
     JacobiParameters *jp = NULL;
     JacobiResult *res = NULL;
@@ -26,14 +27,12 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
-        rotation_matrix = build_rotation_matrix(pivot, jp, n);
         a_new = transform(a, pivot, jp, n);
-        v_new = matrix_mul(v, rotation_matrix, n);
+        v_new = jacobi_calc_eigenvectors_iteration(v, pivot, jp, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
 
         free(pivot);
         free(jp);
-        free_matrix(rotation_matrix, n);
         free_matrix(v, n);
         if (iter > 0) {
             free_matrix(a, n);
@@ -111,21 +110,26 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     return mat_new;
 }
 
-Matrix build_rotation_matrix(Coordinate *pivot, JacobiParameters *jp, size_t n) {
-    Matrix res = build_identity_matrix(n);
+/**
+ * An efficient implementation of the Jacobi interations for finding the eigenvectors.
+ * Taken from a paper we found at: http://phys.uri.edu/nigh/NumRec/bookfpdf/f11-1.pdf
+ * in page 459.
+*/
+Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
+    size_t r;
+    size_t p = pivot -> i;
+    size_t q = pivot -> j;
+    double c = jp -> c;
+    double s = jp -> s;
 
-    res[pivot -> i][pivot -> i] = jp -> c;
-    res[pivot -> j][pivot -> j] = jp -> c;
+    Matrix mat_new = copy_matrix(mat, n);
 
-    if (pivot -> i > pivot -> j) {
-        res[pivot -> i][pivot -> j] = -(jp -> s);
-        res[pivot -> j][pivot -> i] = jp -> s;
-    } else {
-        res[pivot -> i][pivot -> j] = jp -> s;
-        res[pivot -> j][pivot -> i] = -(jp -> s);
+    for (r = 0; r < n; r++) {
+        mat_new[r][p] = c * mat[r][p] - s * mat[r][q];
+        mat_new[r][q] = c * mat[r][q] + s * mat[r][p];
     }
 
-    return res;
+    return mat_new;
 }
 
 double off_diagonal_square_diff(Matrix mat1, Matrix mat2, size_t n) {
@@ -150,10 +154,10 @@ double off_diagonal_square(Matrix mat, size_t n) {
 static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n) {
     size_t i, j;
     for (i = 0; i < n; i++) {
-        if (jr -> eigenvalues[i] == 0 && signbit(jr -> eigenvalues[i]) != 0) {
+        if (_is_negative_zero(jr -> eigenvalues[i])) {
             jr -> eigenvalues[i] = 0.0;
-            for (j = 0; j < n; i++) {
-               jr -> eigenvectors[j][i] = -jr -> eigenvectors[j][i];
+            for (j = 0; j < n; j++) {
+               jr -> eigenvectors[i][j] = -(jr -> eigenvectors[i][j]);
             }
         }
     }
