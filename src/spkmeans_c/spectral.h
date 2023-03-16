@@ -9,7 +9,7 @@
 #include "vector.h"
 
 typedef struct SpectralResult {
-    int k;
+    size_t k;
     Matrix u;
 } SpectralResult;
 
