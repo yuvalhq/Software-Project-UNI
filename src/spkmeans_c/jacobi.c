@@ -5,8 +5,8 @@
 #define MAX_ROTATIONS 100
 #define EPSILON 0.00001
 #define SIGN(x) (((x) < 0) ? (-1) : (1))
-#define _is_negative_zero(x) ((x == 0.0 && signbit(x != 0) || \
-                              (x > -0.0001 && x < 0.0)))
+#define _is_negative_zero(x) ((x == 0.0 && signbit(x) != 0) || \
+                              (x > -0.0001 && x < 0.0))
 
 #include <math.h>
 #include <stdlib.h>
