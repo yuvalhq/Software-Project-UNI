@@ -75,13 +75,13 @@ int eigengap_heuristic(Vector vector, size_t n) {
     size_t half = n / 2;
     size_t max_index = 0;
     double max_delta = 0.0;
-    Vector deltas = malloc((n - 1) * sizeof(double));
+    Vector deltas = malloc((n-1) * sizeof(double));
     Vector vec = copy_vector(vector, n);
 
     qsort(vec, n, sizeof(double), compare_doubles);
 
-    for (i = 0; i < n - 1; i++) {
-        deltas[i] = fabs(vec[i + 1] - vec[i]);
+    for (i = 0; i < n-1; i++) {
+        deltas[i] = fabs(vec[i+1] - vec[i]);
     }
     for (i = 0; i < half; i++) {
         if (deltas[i] > max_delta) {
