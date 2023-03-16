@@ -32,7 +32,6 @@ def test_wam(inputs_folder: str, output_folder: str):
         other_wam = read_matrix_from_file(
             str(Path(output_folder).joinpath(f"test{i}_wam.txt"))
         )
-        # other_wam = mykmeanssp.wam(our_mat)
         np.testing.assert_almost_equal(our_wam, other_wam, decimal=4)
 
 
@@ -47,7 +46,6 @@ def test_ddg(inputs_folder: str, output_folder: str):
         other_ddg = read_matrix_from_file(
             str(Path(output_folder).joinpath(f"test{i}_ddg.txt"))
         )
-        # other_ddg = mykmeanssp.ddg(our_mat)
         np.testing.assert_almost_equal(our_ddg, other_ddg, decimal=4)
 
 
@@ -62,7 +60,6 @@ def test_gl(inputs_folder: str, output_folder: str):
         other_gl = read_matrix_from_file(
             str(Path(output_folder).joinpath(f"test{i}_gl.txt"))
         )
-        # other_gl = mykmeanssp.gl(our_mat)
         np.testing.assert_almost_equal(our_gl, other_gl, decimal=4)
 
 
@@ -77,7 +74,6 @@ def test_jacobi(inputs_folder: str, output_folder: str):
         other_eigenvalues, other_eigenvectors = read_vector_and_matrix_from_file(
             str(Path(output_folder).joinpath(f"test{i}_j_ans.txt"))
         )
-        # other_eigenvectors, other_eigenvalues = mykmeanssp.jacobi(our_mat)
         np.testing.assert_almost_equal(
             np.array(our_eigenvectors).T, other_eigenvectors, decimal=4
         )
