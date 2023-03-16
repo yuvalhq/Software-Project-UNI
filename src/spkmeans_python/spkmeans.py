@@ -48,7 +48,7 @@ def handle_args() -> CommandLineArguments:
         )
     sys.exit("An Error Has Ocurred")
 
-       
+
 def read_matrix_from_file(file_path: Path) -> Matrix:
     result = []
     with open(file_path, "r") as fd:

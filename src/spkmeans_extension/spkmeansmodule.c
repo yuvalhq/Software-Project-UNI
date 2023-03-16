@@ -120,6 +120,29 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     return res;
 }
 
+static PyObject* spk_wrapper(PyObject *self, PyObject *args) {
+    PyObject *data_points = NULL;
+    int k;
+    PyObject *res = NULL;
+
+    SpectralResult *spr = NULL;
+
+    if (!PyArg_ParseTuple(args, "Oi", &data_points, &k)) {
+        return NULL;
+    }
+
+    int n = PyList_Size(data_points);
+    int m = PyList_Size(PyList_GetItem(data_points, 0));
+    Matrix mat = from_python_matrix(data_points);
+    spr = spectral_clustering(mat, k, n, m);
+    res = PyTuple_New(2);
+    PyTuple_SetItem(res, 0, PyLong_FromLong(spr->k));
+    PyTuple_SetItem(res, 1, to_python_matrix(spr->u, n, m));
+
+    free_matrix(mat, n);
+    return res;
+}
+
 static PyMethodDef spkmeans_methods[] = {
     {
         .ml_name = "wam",
@@ -183,6 +206,20 @@ static PyMethodDef spkmeans_methods[] = {
             "----------\n"
             "Matrix:\n"
             "    The matrix to calculate the eigenvalues and eigenvectors of."
+        )
+    },
+    {
+        .ml_name = "spk",
+        .ml_meth = (PyCFunction) spk_wrapper,
+        .ml_flags = METH_VARARGS,
+        .ml_doc = PyDoc_STR(
+            "spk(data_points)\n"
+            "--\n"
+            "Receives datapoints and runs the spectral clustering algorithm on them.\n\n"
+            "Parameters\n"
+            "----------\n"
+            "datapoints:\n"
+            "    The datapoints to calculate spectral clustering on."
         )
     },
     {NULL, NULL, 0, NULL}

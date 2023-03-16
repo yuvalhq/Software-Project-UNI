@@ -45,7 +45,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
-    res -> eigenvectors = transpose(v, n);
+    res -> eigenvectors = transpose(v, n, n);
     res -> eigenvalues = matrix_diagonal_values(a, n);
 
     _unsign_zero_in_jacobi_result(res, n);
@@ -91,7 +91,7 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     double c = jp -> c;
     double s = jp -> s;
 
-    Matrix mat_new = copy_matrix(mat, n);
+    Matrix mat_new = copy_matrix(mat, n, n);
 
     for (r = 0; r < n; r++) {
         if (r != i && r != j) {
@@ -122,7 +122,7 @@ Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiP
     double c = jp -> c;
     double s = jp -> s;
 
-    Matrix mat_new = copy_matrix(mat, n);
+    Matrix mat_new = copy_matrix(mat, n, n);
 
     for (r = 0; r < n; r++) {
         mat_new[r][p] = c * mat[r][p] - s * mat[r][q];
