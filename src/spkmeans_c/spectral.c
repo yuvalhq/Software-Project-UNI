@@ -120,7 +120,7 @@ Matrix get_first_k_eigenvectors(JacobiResult *jacobi_result, int k, size_t n) {
 
     qsort(jacobi_res_t, n, sizeof(Vector), compare_vectors);
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < k; i++) {
         for (j = 0; j < n; j++) {
             u[i][j] = jacobi_res_t[i][j+1];
         }
