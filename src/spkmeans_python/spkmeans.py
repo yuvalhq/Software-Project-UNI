@@ -2,15 +2,17 @@ import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
-from kmeanspp import kmeanspp
 
 import mykmeanssp
 
-Matrix = List[List[float]]
+from .kmeanspp import kmeanspp
+
 Vector = List[float]
+Matrix = List[Vector]
+
 
 class Goal(Enum):
     SPK = auto()
@@ -27,7 +29,7 @@ class Goal(Enum):
 @dataclass
 class CommandLineArguments:
     k: Optional[int]
-    goal: str
+    goal: Goal
     file_path: Path
 
 
@@ -50,7 +52,7 @@ def handle_args() -> CommandLineArguments:
 def eigengap_heuristic(eigenvalues: List[float]) -> int:
     eigenvalues_sorted = np.sort(eigenvalues)
     deltas = np.abs(np.diff(eigenvalues_sorted))
-    return np.argmax(deltas)
+    return int(np.argmax(deltas))
 
 
 def read_matrix_from_file(file_path: Path) -> Matrix:
@@ -65,17 +67,17 @@ def read_matrix_from_file(file_path: Path) -> Matrix:
 def print_matrix(matrix: Matrix) -> None:
     for row in matrix:
         print_vector(row)
-   
- 
+
+
 def print_vector(vector: Vector) -> None:
     print(",".join(f"{x:.4f}" for x in vector))
 
 
-def print_int_list(vector: List[int]) -> None:
-    print(",".join(str(x) for x in vector))
+def print_int_list(integers: List[int]) -> None:
+    print(",".join(str(x) for x in integers))
 
 
-def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, Vector]:
+def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, List[int]]:
     gl = mykmeanssp.gl(matrix)
     eigenvectors, eigenvalues = mykmeanssp.jacobi(gl)
     k = k or eigengap_heuristic(eigenvalues)
@@ -98,12 +100,12 @@ def main():
     if cmd_args.goal == Goal.SPK:
         output, centroids_idxs = spk(input_matrix, cmd_args.k)
         print_int_list(centroids_idxs)
-    
+
     elif cmd_args.goal == Goal.JACOBI:
         eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
         output = np.array(eigenvectors).T.tolist()
         print_vector(eigenvalues)
-            
+
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)
