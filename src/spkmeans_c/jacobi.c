@@ -36,7 +36,7 @@ JacobiResult *jacobi(Matrix sym_mat, size_t n) {
     for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
-        a_new = transform(a, pivot, jp, n);
+        a_new = jacobi_transform_matrix(a, pivot, jp, n);
         v_new = jacobi_calc_eigenvectors_iteration(v, pivot, jp, n);
         convergence = off_diagonal_square_diff(a, a_new, n);
 
@@ -93,7 +93,7 @@ JacobiParameters *get_jacobi_parameters(Matrix mat, Coordinate *pivot){
     return jp;
 }
 
-Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
+Matrix jacobi_transform_matrix(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
     size_t r;
     size_t i = pivot -> i;
     size_t j = pivot -> j;
@@ -119,11 +119,6 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     return mat_new;
 }
 
-/**
- * An efficient implementation of the Jacobi interations for finding the eigenvectors.
- * Taken from a paper we found at: http://phys.uri.edu/nigh/NumRec/bookfpdf/f11-1.pdf
- * in page 459.
-*/
 Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) {
     size_t r;
     size_t p = pivot -> i;

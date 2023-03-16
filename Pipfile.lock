@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5af4e337f160abcddbda7fd774c7d395e0ccf4d92463597599e2ff58b8c309fc"
+            "sha256": "84758f58b5ea58d716646cd812856734b75eac36c675e37356d1de2452aa38c5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,10 @@
         ]
     },
     "default": {
+        "mykmeanssp": {
+            "path": "./src/spkmeans_extension",
+            "version": "==1.0"
+        },
         "numpy": {
             "hashes": [
                 "sha256:003a9f530e880cb2cd177cba1af7220b9aa42def9c4afc2a2fc3ee6be7eb2b22",

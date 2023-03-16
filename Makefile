@@ -79,11 +79,6 @@ build-devel-image: Dockerfile generate-requirements
 	@echo -e "$(BROWN)Building Docker image $(END_COLOR)";
 	docker build -t mykmeanssp-devel:1.0.0 .
 
-generate-requirements: Pipfile
-	@echo -e "$(BROWN)Generating requirements $(END_COLOR)";
-	@pipenv requirements > requirements.txt
-	@pipenv requirements --dev > requirements-dev.txt
-
 $(BINDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(SRC_HEADERS)
 	@echo -en "$(BROWN)CC $(END_COLOR)";
 	$(CC) -c $(firstword $^) -o $@ $(CFLAGS) $(LIBS)
@@ -117,7 +112,16 @@ clean:
 		-o -name build \
 		-o -name .pytest_cache \
 		-o -name *.egg-info \
+		-o -name *.so \
 		| xargs rm -rfv
+
+generate-requirements: Pipfile
+	@echo -e "$(BROWN)Generating requirements $(END_COLOR)";
+	@pipenv requirements > requirements.txt
+	@pipenv requirements --dev > requirements-dev.txt
+
+run-mypy:
+	python3 -m mypy .
 
 run-tests: build-tests
 	./$(TESTS_MAIN)
