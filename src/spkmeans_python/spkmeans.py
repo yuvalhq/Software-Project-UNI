@@ -84,8 +84,8 @@ def main():
     input_matrix = read_matrix_from_file(cmd_args.file_path)
     if cmd_args.goal == Goal.SPK:
         u, k = mykmeanssp.spk(input_matrix, cmd_args.k)
-        result, centroids_idxs = kmeanspp(np.array(u).T, k)
-        output = result.tolist()
+        centroids, centroids_idxs = kmeanspp(np.array(u).T, k)
+        output = centroids.tolist()
         print_int_list(centroids_idxs)
 
     elif cmd_args.goal == Goal.JACOBI:
