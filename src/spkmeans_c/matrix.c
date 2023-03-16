@@ -12,17 +12,7 @@
 #include "matrix.h"
 #include "strutils.h"
 
-Matrix build_matrix(size_t n) {
-    size_t i;
-    Matrix mat = (Matrix) malloc(n * sizeof(Vector));
-
-    for (i = 0; i < n; i++) {
-        mat[i] = (Vector) calloc(n, sizeof(double));
-    }
-    return mat;
-}
-
-Matrix build_nonsquare_matrix(size_t n, size_t m) {
+Matrix build_matrix(size_t n, size_t m) {
     size_t i;
     Matrix mat = (Matrix) malloc(n * sizeof(Vector));
 
@@ -34,7 +24,7 @@ Matrix build_nonsquare_matrix(size_t n, size_t m) {
 
 Matrix build_identity_matrix(size_t n) {
     size_t i;
-    Matrix mat = build_matrix(n);
+    Matrix mat = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         mat[i][i] = 1;
@@ -85,7 +75,7 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
 
 Matrix copy_matrix(Matrix mat, size_t n) {
     size_t i, j;
-    Matrix copy = build_matrix(n);
+    Matrix copy = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
@@ -97,7 +87,7 @@ Matrix copy_matrix(Matrix mat, size_t n) {
 
 Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
     size_t i, j;
-    Matrix sub = build_matrix(n);
+    Matrix sub = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++){
@@ -109,7 +99,7 @@ Matrix matrix_sub(Matrix left, Matrix right, size_t n) {
 
 Matrix matrix_mul(Matrix left, Matrix right, size_t n) {
     size_t i, j, k;
-    Matrix res = build_matrix(n);
+    Matrix res = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {
@@ -123,7 +113,7 @@ Matrix matrix_mul(Matrix left, Matrix right, size_t n) {
 
 Matrix transpose(Matrix mat, size_t n) {
     size_t i, j;
-    Matrix res = build_matrix(n);
+    Matrix res = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         for (j = 0; j < n; j++) {

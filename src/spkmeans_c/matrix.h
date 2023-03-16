@@ -11,8 +11,7 @@ typedef struct Coordinate {
     size_t j;
 } Coordinate;
 
-Matrix build_matrix(size_t n);
-Matrix build_nonsquare_matrix(size_t n, size_t m);
+Matrix build_matrix(size_t n, size_t m);
 Matrix build_identity_matrix(size_t n);
 Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m);
 Matrix copy_matrix(Matrix mat, size_t n);

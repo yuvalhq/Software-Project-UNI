@@ -7,7 +7,7 @@
 Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
     size_t i, j;
     double dist;
-    Matrix w = build_matrix(n);
+    Matrix w = build_matrix(n, n);
 
     for (i = 0; i < n; i++){
         for (j = i; j < n; j++){
@@ -31,7 +31,7 @@ Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
 
 Matrix diagonal_degree_matrix(Matrix w, size_t n) {
     size_t i, j;
-    Matrix d = build_matrix(n);
+    Matrix d = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
         for (j=0; j < n; j++){
@@ -46,7 +46,10 @@ Matrix graph_laplacian(Matrix d, Matrix w, size_t n) {
 }
 
 SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
-    Matrix wam, ddg, gl, u;
+    Matrix wam = NULL;
+    Matrix ddg = NULL;
+    Matrix gl = NULL;
+    Matrix u = NULL;
     JacobiResult *jacobi_result = NULL;
     SpectralResult *spectral_result = NULL;
 
@@ -55,7 +58,7 @@ SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     gl = graph_laplacian(ddg, wam, n);
     jacobi_result = jacobi(gl, n);
     
-    if (k == -1) {
+    if (k < 1) {
         k = eigengap_heuristic(jacobi_result -> eigenvalues, n);
     }
 
@@ -73,27 +76,26 @@ SpectralResult *spectral_clustering(Matrix mat, int k, size_t n, size_t m) {
     return spectral_result;
 }
 
-int eigengap_heuristic(Vector vector, size_t n) {
+int eigengap_heuristic(Vector eigenvalues, size_t n) {
     size_t i;
-    size_t half = n / 2;
     size_t max_index = 0;
     double max_delta = 0.0;
-    Vector deltas = malloc((n-1) * sizeof(double));
-    Vector vec = copy_vector(vector, n);
+    Vector deltas = calloc(n - 1, sizeof(double));
+    Vector sorted_eigenvalues = copy_vector(eigenvalues, n);
 
-    qsort(vec, n, sizeof(double), compare_doubles);
+    qsort(sorted_eigenvalues, n, sizeof(double), compare_doubles);
 
-    for (i = 0; i < n-1; i++) {
-        deltas[i] = fabs(vec[i+1] - vec[i]);
+    for (i = 0; i < n - 1; i++) {
+        deltas[i] = fabs(sorted_eigenvalues[i + 1] - sorted_eigenvalues[i]);
     }
-    for (i = 0; i < half; i++) {
+    for (i = 0; i < n / 2; i++) {
         if (deltas[i] > max_delta) {
             max_delta = deltas[i];
             max_index = i;
         }
     }
     free(deltas);
-    free(vec);
+    free(sorted_eigenvalues);
     return (int) (max_index + 1);
 }
 
@@ -111,23 +113,23 @@ int compare_doubles(const void *a, const void *b) {
 
 Matrix get_first_k_eigenvectors(JacobiResult *jacobi_result, int k, size_t n) {
     size_t i, j;
-    Matrix jacobi_res_t = build_nonsquare_matrix(n, n + 1);
-    Matrix u = build_matrix(n);
+    Matrix extended_eigenvectors_mat  = build_matrix(n, n + 1);
+    Matrix u = build_matrix(n, n);
 
     for (i = 0; i < n; i++) {
-        jacobi_res_t[i][0] = jacobi_result -> eigenvalues[i];
+        extended_eigenvectors_mat [i][0] = jacobi_result -> eigenvalues[i];
         for (j = 0; j < n; j++) {
-            jacobi_res_t[i][j+1] = jacobi_result -> eigenvectors[i][j];
+            extended_eigenvectors_mat [i][j + 1] = jacobi_result -> eigenvectors[i][j];
         }
     }
 
-    qsort(jacobi_res_t, n, sizeof(Vector), compare_vectors);
+    qsort(extended_eigenvectors_mat , n, sizeof(Vector), compare_vectors);
 
     for (i = 0; i < k; i++) {
         for (j = 0; j < n; j++) {
-            u[i][j] = jacobi_res_t[i][j+1];
+            u[i][j] = extended_eigenvectors_mat [i][j + 1];
         }
     }
-    free_matrix(jacobi_res_t, n);
+    free_matrix(extended_eigenvectors_mat , n);
     return u;
 }
