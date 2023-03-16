@@ -48,21 +48,7 @@ def handle_args() -> CommandLineArguments:
         )
     sys.exit("An Error Has Ocurred")
 
-
-def eigengap_heuristic(eigenvalues: List[float]) -> int:
-    eigenvalues_sorted = np.sort(eigenvalues)
-    deltas = np.abs(np.diff(eigenvalues_sorted))
-    n = len(eigenvalues)
-    return int(np.argmax(deltas[:n//2])) + 1
-
-
-def get_first_k_eigenvectors(eigenvectors: Matrix, eigenvalues: Vector, k: int) -> Matrix:
-    eigenvalues_col = np.array(eigenvalues).reshape(-1, 1)
-    jacobi_res_t = np.hstack((eigenvalues_col, eigenvectors))
-    sorted_jacobi_res_t = jacobi_res_t[np.argsort(jacobi_res_t[:, 0])]
-    return sorted_jacobi_res_t[:k, 1:]
-    
-    
+       
 def read_matrix_from_file(file_path: Path) -> Matrix:
     result = []
     with open(file_path, "r") as fd:
