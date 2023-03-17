@@ -8,7 +8,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "common.h"
 #include "matrix.h"
 #include "strutils.h"
 
@@ -40,7 +39,9 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     Matrix mat = NULL;
 
     FILE *file = fopen(filename, "r");
-    FATAL_ERROR_IF_NULL(file);
+    if (file == NULL) {
+        return NULL;
+    }
 
     mat = (Matrix) malloc(sizeof(Vector));
 
@@ -49,14 +50,18 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
            *m = strcount(line, COMMA) + 1;
         }
 
-        vector = (Vector) calloc(*m, sizeof(double));;
+        vector = (Vector) calloc(*m, sizeof(double));
         line_idx = line;
 
         for (i = 0; i < (*m); i++) {
             vector[i] = strtod(line_idx, &line_idx);
             if (*line_idx != COMMA && *line_idx != LINE_FEED &&
                 *line_idx != CARRIAGE_RETURN) {
-                FATAL_ERROR();
+                    free(line);
+                    free(vector);
+                    free_matrix(mat, *n);
+                    fclose(file);
+                    return NULL;
             }
             line_idx++;
             if (*line_idx == LINE_FEED) {

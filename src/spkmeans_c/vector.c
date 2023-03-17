@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "common.h"
+#include <stdlib.h>
 #include "vector.h"
 
 Vector copy_vector(Vector vector, size_t n) {

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "common.h"
 #include "spectral.h"
 
 Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
@@ -53,7 +52,7 @@ SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size
     SpectralResult *spectral_result = NULL;
 
     if (k > n) {
-        FATAL_ERROR();
+        return NULL;
     }
 
     spectral_result = (SpectralResult*) malloc(sizeof(SpectralResult));

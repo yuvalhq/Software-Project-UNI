@@ -7,13 +7,16 @@
 #endif
 
 #define NUM_OF_ARGS 3
+#define FATAL_ERROR() {\
+    printf("An Error Has Occurred\n");\
+    exit(EXIT_FAILURE);\
+}
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include "common.h"
 #include "jacobi.h"
 #include "matrix.h"
 #include "spectral.h"
@@ -21,13 +24,22 @@
 
 int main(int argc, char *argv[]) {
     size_t n = 0, m = 0;
+    CommandLineArguments *args = NULL;
     Matrix input = NULL, wam = NULL, ddg = NULL, gl = NULL;
     JacobiResult *jacobi_result = NULL;
 
-    CommandLineArguments *args = handle_args(argc, argv);
+    args = handle_args(argc, argv);
     input = build_matrix_from_file(args -> input_file_path, &n, &m);
+    if (input == NULL) {
+        free(args);
+        FATAL_ERROR();
+    }
 
     if (args -> goal == JACOBI) {
+        if (n != m) {
+            FATAL_ERROR();
+        }
+
         jacobi_result = jacobi(input, n);
 
         print_vector(jacobi_result -> eigenvalues, n);
@@ -35,7 +47,7 @@ int main(int argc, char *argv[]) {
             jacobi_result -> eigenvectors,
             n,
             n
-        ); /* Need to print the eigenvectors as columns */
+        ); /* Print the eigenvectors as columns */
 
         free_matrix(input, n);
         free_matrix(jacobi_result -> eigenvectors, n);
