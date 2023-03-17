@@ -45,14 +45,14 @@ Matrix graph_laplacian(Matrix d, Matrix w, size_t n) {
     return matrix_sub(d, w, n, n);
 }
 
-SpectralResult *spectral_clustering(Matrix mat, size_t k, size_t n, size_t m) {
+SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size_t m) {
     Matrix wam = NULL;
     Matrix ddg = NULL;
     Matrix gl = NULL;
     JacobiResult *jacobi_result = NULL;
-    SpectralResult *spectral_result = NULL;
+    SpectralResult *spectral_result = (SpectralResult*) malloc(sizeof(SpectralResult));
 
-    wam = weighted_adjacency_matrix(mat, n, m);
+    wam = weighted_adjacency_matrix(data_points, n, m);
     ddg = diagonal_degree_matrix(wam, n);
     gl = graph_laplacian(ddg, wam, n);
     jacobi_result = jacobi(gl, n);
