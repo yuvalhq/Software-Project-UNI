@@ -10,7 +10,7 @@
 
 typedef struct SpectralResult {
     size_t k;
-    Matrix u; // TODO Rename to a more indicative name
+    Matrix new_points;
 } SpectralResult;
 
 Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m);

@@ -133,11 +133,15 @@ static PyObject* spk_wrapper(PyObject *self, PyObject *args) {
 
     int n = PyList_Size(data_points);
     int m = PyList_Size(PyList_GetItem(data_points, 0));
+    if (k > n) {
+        return Py_None;
+    }
+
     Matrix mat = from_python_matrix(data_points);
     spr = spectral_clustering(mat, k, n, m);
     res = PyTuple_New(2);
-    PyTuple_SetItem(res, 0, PyLong_FromLong(spr->k));
-    PyTuple_SetItem(res, 1, to_python_matrix(spr->u, n, m));
+    PyTuple_SetItem(res, 0, PyLong_FromLong(spr -> k));
+    PyTuple_SetItem(res, 1, to_python_matrix(spr -> new_points, n, m));
 
     free_matrix(mat, n);
     return res;
@@ -215,7 +219,10 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_doc = PyDoc_STR(
             "spk(data_points)\n"
             "--\n"
-            "Receives datapoints and runs the spectral clustering algorithm on them.\n\n"
+            "Receives datapoints and k and runs the spectral clustering algorithm on them.\n"
+            "The return value of the function is the new points which will be the input of the k-means++ algorithm.\n"
+            "If k < 1, the function will use the eigengap heuristic to determine the best k value, and if "
+            "k > n, the return value will be None.\n\n"
             "Parameters\n"
             "----------\n"
             "datapoints:\n"

@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "common.h"
 #include "spectral.h"
-
 
 Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
     size_t i, j;
@@ -50,8 +50,13 @@ SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size
     Matrix ddg = NULL;
     Matrix gl = NULL;
     JacobiResult *jacobi_result = NULL;
-    SpectralResult *spectral_result = (SpectralResult*) malloc(sizeof(SpectralResult));
+    SpectralResult *spectral_result = NULL;
 
+    if (k > n) {
+        FATAL_ERROR();
+    }
+
+    spectral_result = (SpectralResult*) malloc(sizeof(SpectralResult));
     wam = weighted_adjacency_matrix(data_points, n, m);
     ddg = diagonal_degree_matrix(wam, n);
     gl = graph_laplacian(ddg, wam, n);
@@ -62,7 +67,7 @@ SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size
     }
 
     spectral_result -> k = k;
-    spectral_result -> u = get_first_k_eigenvectors(jacobi_result, k, n);
+    spectral_result -> new_points = get_first_k_eigenvectors(jacobi_result, k, n);
 
     free_matrix(wam, n);
     free_matrix(ddg, n);

@@ -82,17 +82,15 @@ def main():
 
     cmd_args = handle_args()
     input_matrix = read_matrix_from_file(cmd_args.file_path)
-    if cmd_args.goal == Goal.SPK:
+    if cmd_args.goal == Goal.JACOBI:
+        eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
+        output = np.array(eigenvectors).T.tolist()
+        print_vector(eigenvalues)
+    elif cmd_args.goal == Goal.SPK:
         u, k = mykmeanssp.spk(input_matrix, cmd_args.k)
         centroids, centroids_idxs = kmeanspp(np.array(u).T, k)
         output = centroids.tolist()
         print_int_list(centroids_idxs)
-
-    elif cmd_args.goal == Goal.JACOBI:
-        eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
-        output = np.array(eigenvectors).T.tolist()
-        print_vector(eigenvalues)
-
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)

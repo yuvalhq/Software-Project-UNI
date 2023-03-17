@@ -61,7 +61,6 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
     size_t i, j;
     Coordinate *res = (Coordinate *) malloc(sizeof(Coordinate));
     double val, max_val = -1.0;
-    // TODO Ensure n > 1
 
     for (i = 0; i < n; i++) {
         for (j = i + 1; j < n; j++) {

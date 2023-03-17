@@ -2,7 +2,6 @@
 #include "common.h"
 #include "vector.h"
 
-
 Vector copy_vector(Vector vector, size_t n) {
     size_t i;
     Vector copy = (Vector) calloc(n, sizeof(double));
