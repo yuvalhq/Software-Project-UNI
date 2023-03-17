@@ -130,7 +130,7 @@ static int _compare_vectors_by_first_column(const void* a, const void* b) {
 static Matrix _get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n) {
     size_t i, j;
     Matrix extended_eigenvectors_mat = build_matrix(n, n + 1);
-    Matrix u = build_matrix(n, n);
+    Matrix u = build_matrix(k, n);
 
     for (i = 0; i < n; i++) {
         extended_eigenvectors_mat[i][0] = jacobi_result -> eigenvalues[i];

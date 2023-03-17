@@ -157,7 +157,7 @@ static PyObject* spk_wrapper(PyObject *self, PyObject *args, PyObject *kwargs) {
     Matrix data_points_c = from_python_matrix(data_points_py);
     spr = spectral_clustering(data_points_c, k, n, m);
     res = PyTuple_New(2);
-    PyTuple_SetItem(res, 0, to_python_matrix(spr -> new_points, n, m));
+    PyTuple_SetItem(res, 0, to_python_matrix(spr -> new_points, spr -> k, n));
     PyTuple_SetItem(res, 1, PyLong_FromLong(spr -> k));
 
     free_matrix(data_points_c, n);
