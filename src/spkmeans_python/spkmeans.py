@@ -13,6 +13,8 @@ from kmeanspp import kmeanspp
 Vector = List[float]
 Matrix = List[Vector]
 
+DEFAULT_ERR_MSG = "An Error Has Ocurred"
+
 
 class Goal(Enum):
     SPK = auto()
@@ -46,7 +48,7 @@ def handle_args() -> CommandLineArguments:
             goal=Goal.from_lowercase_string(sys.argv[2]),
             file_path=Path(sys.argv[3]),
         )
-    sys.exit("An Error Has Ocurred")
+    sys.exit(DEFAULT_ERR_MSG)
 
 
 def read_matrix_from_file(file_path: Path) -> Matrix:
@@ -87,8 +89,11 @@ def main():
         output = np.array(eigenvectors).T.tolist()
         print_vector(eigenvalues)
     elif cmd_args.goal == Goal.SPK:
-        u, k = mykmeanssp.spk(input_matrix, cmd_args.k)
-        centroids, centroids_idxs = kmeanspp(np.array(u).T, k)
+        try:
+            new_points, k = mykmeanssp.spk(input_matrix, cmd_args.k)
+        except Exception:
+            sys.exit(DEFAULT_ERR_MSG)
+        centroids, centroids_idxs = kmeanspp(np.array(new_points).T, k)
         output = centroids.tolist()
         print_int_list(centroids_idxs)
     else:

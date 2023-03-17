@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
 
     if (args -> goal == JACOBI) {
         if (n != m) {
+            free(args);
+            free_matrix(input, n);
             FATAL_ERROR();
         }
 

@@ -5,9 +5,13 @@
 
 static int _compare_doubles(const void *a, const void *b);
 static int _compare_vectors_by_first_column(const void* a, const void* b);
+
+/**
+ * Get the eigenvectors corresponding to the k smallest eigenvalues.
+ */
 static Matrix _get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n);
 
-Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
+Matrix weighted_adjacency_matrix(Matrix data_points, size_t n, size_t m) {
     size_t i, j;
     double dist;
     Matrix w = build_matrix(n, n);
@@ -19,7 +23,7 @@ Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m) {
                 continue;
             }
 
-            dist = squared_euclidean_distance(mat[i], mat[j], m);
+            dist = squared_euclidean_distance(data_points[i], data_points[j], m);
             w[i][j] = exp(-dist / 2);
         }
     }
@@ -65,7 +69,7 @@ SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size
     gl = graph_laplacian(ddg, wam, n);
     jacobi_result = jacobi(gl, n);
 
-    if (k < 1) {
+    if (k == 0) {
         k = eigengap_heuristic(jacobi_result -> eigenvalues, n);
     }
 
@@ -123,9 +127,6 @@ static int _compare_vectors_by_first_column(const void* a, const void* b) {
     return (row_b[0] > row_a[0]) - (row_a[0] > row_b[0]);
 }
 
-/**
- * Get the eigenvectors corresponding to the k smallest eigenvalues.
- */
 static Matrix _get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n) {
     size_t i, j;
     Matrix extended_eigenvectors_mat = build_matrix(n, n + 1);

@@ -16,7 +16,7 @@ typedef struct JacobiResult {
     Matrix eigenvectors;
 } JacobiResult;
 
-JacobiResult *jacobi(Matrix mat, size_t n);
+JacobiResult *jacobi(Matrix sym_mat, size_t n);
 Coordinate *get_pivot_coord(Matrix mat, size_t n);
 JacobiParameters *get_jacobi_parameters(Matrix mat, Coordinate *pivot);
 Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n);

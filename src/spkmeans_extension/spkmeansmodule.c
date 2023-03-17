@@ -120,30 +120,48 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     return res;
 }
 
-static PyObject* spk_wrapper(PyObject *self, PyObject *args) {
-    PyObject *data_points = NULL;
-    int k;
+static PyObject* spk_wrapper(PyObject *self, PyObject *args, PyObject *kwargs) {
+    PyObject *data_points_py = NULL;
+    PyObject *optional_k = Py_None;
     PyObject *res = NULL;
 
+    Py_ssize_t k;
     SpectralResult *spr = NULL;
 
-    if (!PyArg_ParseTuple(args, "Oi", &data_points, &k)) {
+    static char* kwlist[] = {"data_points", "k", NULL};
+    if (!PyArg_ParseTupleAndKeywords(
+            args,
+            kwargs,
+            "O|O",
+            kwlist,
+            &data_points_py, &optional_k)) {
         return NULL;
     }
 
-    int n = PyList_Size(data_points);
-    int m = PyList_Size(PyList_GetItem(data_points, 0));
-    if (k > n) {
-        return Py_None;
+    if (optional_k == Py_None) {
+        k = 0;
+    } else if (PyLong_Check(optional_k)) {
+        k = PyLong_AsLong(optional_k);
+    } else {
+        PyErr_SetString(PyExc_TypeError, "K must be an int or None");
+        return NULL;
     }
 
-    Matrix mat = from_python_matrix(data_points);
-    spr = spectral_clustering(mat, k, n, m);
-    res = PyTuple_New(2);
-    PyTuple_SetItem(res, 0, PyLong_FromLong(spr -> k));
-    PyTuple_SetItem(res, 1, to_python_matrix(spr -> new_points, n, m));
+    Py_ssize_t n = PyList_Size(data_points_py);
+    Py_ssize_t m = PyList_Size(PyList_GetItem(data_points_py, 0));
+    if (k > n) {
+        PyErr_SetString(PyExc_ValueError, "k can't be larger than n");
+        return NULL;
+    }
 
-    free_matrix(mat, n);
+    Matrix data_points_c = from_python_matrix(data_points_py);
+    spr = spectral_clustering(data_points_c, k, n, m);
+    res = PyTuple_New(2);
+    PyTuple_SetItem(res, 0, to_python_matrix(spr -> new_points, n, m));
+    PyTuple_SetItem(res, 1, PyLong_FromLong(spr -> k));
+
+    free_matrix(data_points_c, n);
+    free(spr);
     return res;
 }
 
@@ -215,7 +233,7 @@ static PyMethodDef spkmeans_methods[] = {
     {
         .ml_name = "spk",
         .ml_meth = (PyCFunction) spk_wrapper,
-        .ml_flags = METH_VARARGS,
+        .ml_flags = METH_VARARGS | METH_KEYWORDS,
         .ml_doc = PyDoc_STR(
             "spk(data_points)\n"
             "--\n"

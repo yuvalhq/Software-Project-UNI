@@ -13,7 +13,7 @@ typedef struct SpectralResult {
     Matrix new_points;
 } SpectralResult;
 
-Matrix weighted_adjacency_matrix(Matrix mat, size_t n, size_t m);
+Matrix weighted_adjacency_matrix(Matrix data_points, size_t n, size_t m);
 Matrix diagonal_degree_matrix(Matrix w, size_t n);
 Matrix graph_laplacian(Matrix d, Matrix w, size_t n);
 SpectralResult *spectral_clustering(Matrix data_points, size_t k, size_t n, size_t m);
