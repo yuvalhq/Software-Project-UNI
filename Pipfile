@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+mykmeanssp = {path = "./src/spkmeans_extension"}
 
 [dev-packages]
 ipython = "*"
