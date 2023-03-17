@@ -26,7 +26,8 @@ Matrix weighted_adjacency_matrix(Matrix data_points, size_t n, size_t m);
 Matrix diagonal_degree_matrix(Matrix w, size_t n);
 
 /**
- * Receive a square matrix and its order and calculate the graph laplalcian matrix of it.
+ * Receive the diagonal degree matrix and the weighted adjacency matrix, and calculate the graph Laplacian,
+ * by subtracting between them.
  * The function allocates memory for the new matrix, so it's the caller's responsibility to free it.
  */
 Matrix graph_laplacian(Matrix d, Matrix w, size_t n);
