@@ -22,12 +22,6 @@ double squared_euclidean_distance(Vector p, Vector q, size_t m) {
     return distance;
 }
 
-int compare_vectors(const void* a, const void* b) {
-    const Vector row_a = *(const Vector*)a;
-    const Vector row_b = *(const Vector*)b;
-    return (row_b[0] > row_a[0]) - (row_a[0] > row_b[0]);
-}
-
 void print_vector(Vector vector, size_t m) {
     size_t i;
     for (i = 0; i < m; i++) {
