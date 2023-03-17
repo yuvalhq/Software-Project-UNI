@@ -47,11 +47,11 @@ TESTS_MAIN_OBJECT       := $(BINDIR)/$(PROJECT_NAME)_tests.o
 DEBUG_OBJECTS           := $(patsubst %.o,%-debug.o,$(SRC_OBJECTS))
 DEBUG_MAIN              := $(MAIN)-debug
 
-.PHONY: pre-commit build build-python-extension build-tests generate-requirements build-devel-image debug run-tests run-pytest run-black run-isort valgrind clean
-
-pre-commit:
-	@which pre-commit &>/dev/null || (echo "ERROR: Please install pre-commit first" ; exit 1)
-	pre-commit install
+.PHONY: build build-python-extension build-tests \
+	build-debug build-devel-image \
+	valgrind clean generate-requirements \
+	run-tests run-pytest run-black run-isort \
+	pre-commit
 
 build: $(SRC_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -69,32 +69,20 @@ build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(S
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(TESTS_MAIN)$(END_COLOR)\n";
 
-generate-requirements: Pipfile
-	@echo -e "$(BROWN)Generating requirements $(END_COLOR)";
-	@pipenv requirements > requirements.txt
-	@pipenv requirements --dev > requirements-dev.txt
-
-build-devel-image: Dockerfile generate-requirements
-	@echo -e "$(BROWN)Building Docker image $(END_COLOR)";
-	docker build -t mykmeanssp-devel:1.0.0 .
-
-debug: $(DEBUG_OBJECTS)
+build-debug: $(DEBUG_OBJECTS)
 	@echo -en "$(BROWN)LD $(END_COLOR)";
 	$(CC) -o $(DEBUG_MAIN) $+ $(DEBUG_FLAGS) $(CFLAGS) $(LIBS)
 	@echo -en "\n--\nBinary file placed at" \
 			  "$(BROWN)$(DEBUG_MAIN)$(END_COLOR)\n";
 
-run-tests: build-tests
-	./$(TESTS_MAIN)
+build-devel-image: Dockerfile generate-requirements
+	@echo -e "$(BROWN)Building Docker image $(END_COLOR)";
+	docker build -t mykmeanssp-devel:1.0.0 .
 
-run-pytest: build-python-extension
-	python3 -m pytest -sv .
-
-run-black:
-	python3 -m black .
-
-run-isort:
-	python3 -m isort .
+generate-requirements: Pipfile
+	@echo -e "$(BROWN)Generating requirements $(END_COLOR)";
+	@pipenv requirements > requirements.txt
+	@pipenv requirements --dev > requirements-dev.txt
 
 $(BINDIR)/%.o: $(SRCDIR)/%.$(SRCEXT) $(SRC_HEADERS)
 	@echo -en "$(BROWN)CC $(END_COLOR)";
@@ -112,7 +100,7 @@ $(BINDIR)/%-debug.o: $(SRCDIR)/%.$(SRCEXT) $(SRC_HEADERS)
 	@echo -en "$(BROWN)CC $(END_COLOR)";
 	$(CC) -c $(firstword $^) -o $@ $(DEBUG) $(CFLAGS) $(LIBS)
 
-valgrind: debug
+valgrind: build-debug
 ifndef args
 	@echo -en "$(BROWN)You can pass program args with args=\"...\"$(END_COLOR)\n\n--\n"
 endif
@@ -130,3 +118,19 @@ clean:
 		-o -name .pytest_cache \
 		-o -name *.egg-info \
 		| xargs rm -rfv
+
+run-tests: build-tests
+	./$(TESTS_MAIN)
+
+run-pytest: build-python-extension
+	python3 -m pytest -sv .
+
+run-black:
+	python3 -m black .
+
+run-isort:
+	python3 -m isort .
+
+pre-commit:
+	@which pre-commit &>/dev/null || (echo "ERROR: Please install pre-commit first" ; exit 1)
+	pre-commit install
