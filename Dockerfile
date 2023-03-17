@@ -10,7 +10,8 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     python3-pip \
     make \
     gcc \
-    git
+    git \
+    valgrind
 
 COPY . /usr/src
 WORKDIR /usr/src

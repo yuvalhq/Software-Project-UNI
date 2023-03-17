@@ -6,6 +6,7 @@
 
 typedef double *Vector;
 
+Vector copy_vector(Vector vector, size_t n);
 double squared_euclidean_distance(Vector p, Vector q, size_t m);
 void print_vector(Vector vector, size_t m);
 

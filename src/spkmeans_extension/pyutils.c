@@ -44,7 +44,7 @@ PyObject *to_python_matrix(Matrix matrix, Py_ssize_t n, Py_ssize_t m) {
     Py_ssize_t i;
 
     for (i = 0; i < n; i++) {
-        vector_lst = to_python_vector(matrix[i], n);
+        vector_lst = to_python_vector(matrix[i], m);
         PyList_SetItem(result, i, vector_lst);
     }
 

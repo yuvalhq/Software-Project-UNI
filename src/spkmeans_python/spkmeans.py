@@ -2,16 +2,18 @@ import sys
 from dataclasses import dataclass
 from enum import Enum, auto
 from pathlib import Path
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
 import mykmeanssp
 
-from .kmeanspp import kmeanspp
+from kmeanspp import kmeanspp
 
 Vector = List[float]
 Matrix = List[Vector]
+
+DEFAULT_ERR_MSG = "An Error Has Ocurred"
 
 
 class Goal(Enum):
@@ -46,13 +48,7 @@ def handle_args() -> CommandLineArguments:
             goal=Goal.from_lowercase_string(sys.argv[2]),
             file_path=Path(sys.argv[3]),
         )
-    sys.exit("An Error Has Ocurred")
-
-
-def eigengap_heuristic(eigenvalues: List[float]) -> int:
-    eigenvalues_sorted = np.sort(eigenvalues)
-    deltas = np.abs(np.diff(eigenvalues_sorted))
-    return int(np.argmax(deltas))
+    sys.exit(DEFAULT_ERR_MSG)
 
 
 def read_matrix_from_file(file_path: Path) -> Matrix:
@@ -77,15 +73,6 @@ def print_int_list(integers: List[int]) -> None:
     print(",".join(str(x) for x in integers))
 
 
-def spk(matrix: Matrix, k: Optional[int]) -> Tuple[Matrix, List[int]]:
-    gl = mykmeanssp.gl(matrix)
-    eigenvectors, eigenvalues = mykmeanssp.jacobi(gl)
-    k = k or eigengap_heuristic(eigenvalues)
-    transposed_eigenvectors_np = np.array(eigenvectors).T
-    result, centroids_idxs = kmeanspp(transposed_eigenvectors_np, k)
-    return result.tolist(), centroids_idxs
-
-
 def main():
     goal_map = {
         Goal.WAM: mykmeanssp.wam,
@@ -97,15 +84,18 @@ def main():
 
     cmd_args = handle_args()
     input_matrix = read_matrix_from_file(cmd_args.file_path)
-    if cmd_args.goal == Goal.SPK:
-        output, centroids_idxs = spk(input_matrix, cmd_args.k)
-        print_int_list(centroids_idxs)
-
-    elif cmd_args.goal == Goal.JACOBI:
+    if cmd_args.goal == Goal.JACOBI:
         eigenvectors, eigenvalues = mykmeanssp.jacobi(input_matrix)
         output = np.array(eigenvectors).T.tolist()
         print_vector(eigenvalues)
-
+    elif cmd_args.goal == Goal.SPK:
+        try:
+            new_points, k = mykmeanssp.spk(input_matrix, cmd_args.k)
+        except Exception:
+            sys.exit(DEFAULT_ERR_MSG)
+        centroids, centroids_idxs = kmeanspp(np.array(new_points).T, k)
+        output = centroids.tolist()
+        print_int_list(centroids_idxs)
     else:
         output = goal_map[cmd_args.goal](input_matrix)
     print_matrix(output)

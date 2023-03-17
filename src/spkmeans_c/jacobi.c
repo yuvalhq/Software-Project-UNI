@@ -15,15 +15,24 @@
 
 static void _unsign_zero_in_jacobi_result(JacobiResult *jr, size_t n);
 
-JacobiResult *jacobi(Matrix mat, size_t n) {
+JacobiResult *jacobi(Matrix sym_mat, size_t n) {
     size_t iter;
     double convergence = 1.0;
-    Matrix a = mat, a_new = NULL;
-    Matrix v = build_identity_matrix(n), v_new = NULL;
+    Matrix a = sym_mat, a_new = NULL;
+    Matrix v = NULL, v_new = NULL;
     Coordinate *pivot = NULL;
     JacobiParameters *jp = NULL;
-    JacobiResult *res = NULL;
+    JacobiResult *res = (JacobiResult *) malloc(sizeof(JacobiResult));
 
+    if (n == 1) {
+        res -> eigenvectors = build_matrix(1, 1);
+        res -> eigenvectors[0][0] = 1.0;
+        res -> eigenvalues = (Vector) malloc(sizeof(double));
+        res -> eigenvalues[0] = sym_mat[0][0];
+        return res;
+    }
+
+    v = build_identity_matrix(n);
     for(iter = 0; convergence > EPSILON && iter < MAX_ROTATIONS; iter++) {
         pivot = get_pivot_coord(a, n);
         jp = get_jacobi_parameters(a, pivot);
@@ -45,7 +54,7 @@ JacobiResult *jacobi(Matrix mat, size_t n) {
     }
 
     res = (JacobiResult *) malloc(sizeof(JacobiResult));
-    res -> eigenvectors = transpose(v, n);
+    res -> eigenvectors = transpose(v, n, n);
     res -> eigenvalues = matrix_diagonal_values(a, n);
 
     _unsign_zero_in_jacobi_result(res, n);
@@ -91,7 +100,7 @@ Matrix transform(Matrix mat, Coordinate *pivot, JacobiParameters *jp, size_t n) 
     double c = jp -> c;
     double s = jp -> s;
 
-    Matrix mat_new = copy_matrix(mat, n);
+    Matrix mat_new = copy_matrix(mat, n, n);
 
     for (r = 0; r < n; r++) {
         if (r != i && r != j) {
@@ -122,7 +131,7 @@ Matrix jacobi_calc_eigenvectors_iteration(Matrix mat, Coordinate *pivot, JacobiP
     double c = jp -> c;
     double s = jp -> s;
 
-    Matrix mat_new = copy_matrix(mat, n);
+    Matrix mat_new = copy_matrix(mat, n, n);
 
     for (r = 0; r < n; r++) {
         mat_new[r][p] = c * mat[r][p] - s * mat[r][q];
