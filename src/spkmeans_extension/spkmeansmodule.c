@@ -171,9 +171,9 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_meth = (PyCFunction) wam_wrapper,
         .ml_flags = METH_VARARGS,
         .ml_doc = PyDoc_STR(
-            "wam(data_points)\n"
+            "wam(data_points:)\n"
             "--\n"
-            "Receives a list of points and converts them to a weighted adjacency matrix, "
+            "Receive a list of datapoints and its dimensions and calculate the weighted adjacency matrix of it, "
             "which is defined by:\n"
             "w_ij = exp(-||x_i - x_j||^2 / 2) if i != j, and w_ii = 0\n"
             "We denote by ||_||^2 the Squared Euclidean Distance.\n\n"
@@ -188,17 +188,16 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_meth = (PyCFunction) ddg_wrapper,
         .ml_flags = METH_VARARGS,
         .ml_doc = PyDoc_STR(
-            "ddg(data_points)\n"
+            "ddg(w)\n"
             "--\n"
-            "Receives a list of points and converts them to a weighted adjacency matrix, "
-            "and then calculates the diagonal degree matrix.\n"
-            "The matrix is defined as the diagonal matrix with the degrees d_1,..,d_n on the diagonal "
+            "Receive a square matrix w and its order and calculate the diagonal degree matrix of it, which is "
+            "defined as the diagonal matrix with the degrees d_1,..,d_n on the diagonal "
             "and zero elsewhere. The degree of a vertex x_i \\in X is defined as:\n"
             "d_i = sum_{j=1}^{n}(w_ij)\n\n"
             "Parameters\n"
             "----------\n"
-            "datapoints:\n"
-            "    The datapoints to calculate the matrix of."
+            "matrix:\n"
+            "    The square matrix to calculate the diagonal degree matrix of."
         )
     },
     {
@@ -206,14 +205,16 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_meth = (PyCFunction) gl_wrapper,
         .ml_flags = METH_VARARGS,
         .ml_doc = PyDoc_STR(
-            "gl(data_points)\n"
+            "gl(d, w)\n"
             "--\n"
-            "Receives a list of points and converts calculates the graph Laplacian of them.\n"
-            "The graph L \\in R^{n*n} is defined as L = D - W, while D and W are the DDG and WAM respectively.\n\n"
+            "Receive the diagonal degree matrix and the weighted adjacency matrix, and calculate the graph Laplacian, "
+            "by subtracting between them."
             "Parameters\n"
             "----------\n"
-            "datapoints:\n"
-            "    The datapoints to calculate the matrix of."
+            "d:\n"
+            "    The diagonal degree matrix."
+            "w:\n"
+            "    The weighted adjacency matrix."
         )
     },
     {
@@ -223,7 +224,13 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_doc = PyDoc_STR(
             "jacobi(matrix)\n"
             "--\n"
-            "Receives a matrix and runs the Jacobi algorithm on it to calculate the eigenvalues and eigenvectors.\n\n"
+            "Receive a symmetric matrix and run the Jacobi algorithm to return the eigenvectors and eigenvalues of the matrix."
+            "Notice that the JacobiResult holds the eigenvectors, and mathematically, Jacobi returns a matrix that its "
+            "columns are the eigenvectors, meaning the return value is transposed.\n"
+            "If the caller wants to use the matrix returned from the Jacobi algorithm, it's his responsibility to transpose "
+            "the returned matrix.\n"
+            "If the passed matrix is a 1x1 matrix, then it has a single eigenvalue which is the singleton of the matrix, "
+            "and all vectors are eigenvectors. In this case we define the returned eigenvector as the singleton of 1.0.\n"
             "Parameters\n"
             "----------\n"
             "Matrix:\n"
@@ -235,12 +242,12 @@ static PyMethodDef spkmeans_methods[] = {
         .ml_meth = (PyCFunction) spk_wrapper,
         .ml_flags = METH_VARARGS | METH_KEYWORDS,
         .ml_doc = PyDoc_STR(
-            "spk(data_points)\n"
+            "spk(data_points, k=None)\n"
             "--\n"
             "Receives datapoints and k and runs the spectral clustering algorithm on them.\n"
             "The return value of the function is the new points which will be the input of the k-means++ algorithm.\n"
-            "If k < 1, the function will use the eigengap heuristic to determine the best k value, and if "
-            "k > n, the return value will be None.\n\n"
+            "If k is None, the function will use the eigengap heuristic to determine the best k value, and if "
+            "k > n, a ValueError will be raised.\n\n"
             "Parameters\n"
             "----------\n"
             "datapoints:\n"
