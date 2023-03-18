@@ -122,9 +122,9 @@ static int _compare_doubles(const void *a, const void *b) {
 }
 
 static int _compare_vectors_by_first_column(const void* a, const void* b) {
-    const Vector row_a = *(const Vector*)a;
-    const Vector row_b = *(const Vector*)b;
-    return (row_b[0] > row_a[0]) - (row_a[0] > row_b[0]);
+    const Vector row_a = *(const Vector*) a;
+    const Vector row_b = *(const Vector*) b;
+    return (row_a[0] > row_b[0]) - (row_b[0] > row_a[0]);
 }
 
 static Matrix _get_first_k_eigenvectors(JacobiResult *jacobi_result, size_t k, size_t n) {

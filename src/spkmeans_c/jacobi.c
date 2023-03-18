@@ -87,8 +87,8 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
 JacobiParameters *get_jacobi_parameters(Matrix mat, Coordinate *pivot){
     JacobiParameters *jp = (JacobiParameters *) malloc(sizeof(JacobiParameters));
     jp -> theta = (mat[pivot -> j][pivot -> j] - mat[pivot -> i][pivot -> i]) / (2 * mat[pivot -> i][pivot -> j]);
-    jp -> t = SIGN(jp -> theta) / (fabs(jp -> theta) + sqrt(pow(jp -> theta, 2) + 1));
-    jp -> c = 1.0 / sqrt(pow(jp -> t, 2) + 1);
+    jp -> t = SIGN(jp -> theta) / (fabs(jp -> theta) + sqrt(pow(jp -> theta, 2) + 1.0));
+    jp -> c = 1.0 / sqrt(pow(jp -> t, 2) + 1.0);
     jp -> s = (jp -> t) * (jp -> c);
     return jp;
 }
