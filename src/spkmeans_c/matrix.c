@@ -37,12 +37,13 @@ Matrix build_matrix_from_file(char *filename, size_t *n, size_t *m) {
     char *line_idx = NULL;
     Vector vector = NULL;
     Matrix mat = NULL;
-
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
         return NULL;
     }
 
+    *m = 0;
+    *n = 0;
     mat = (Matrix) malloc(sizeof(Vector));
 
     while (getline(&line, &line_len, file) != -1) {
