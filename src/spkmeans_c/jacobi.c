@@ -2,8 +2,8 @@
 #define _GNU_SOURCE
 #endif
 
-#define MAX_ROTATIONS 100
-#define EPSILON 0.00001
+#define MAX_ROTATIONS 1000
+#define EPSILON 0.0000001
 #define SIGN(x) (((x) < 0) ? (-1) : (1))
 #define _is_negative_zero(x) ((x == 0.0 && signbit(x) != 0) || \
                               (x > -0.0001 && x < 0.0))
@@ -87,8 +87,8 @@ Coordinate *get_pivot_coord(Matrix mat, size_t n) {
 JacobiParameters *get_jacobi_parameters(Matrix mat, Coordinate *pivot){
     JacobiParameters *jp = (JacobiParameters *) malloc(sizeof(JacobiParameters));
     jp -> theta = (mat[pivot -> j][pivot -> j] - mat[pivot -> i][pivot -> i]) / (2 * mat[pivot -> i][pivot -> j]);
-    jp -> t = SIGN(jp -> theta) / (fabs(jp -> theta) + sqrt(pow(jp -> theta, 2) + 1));
-    jp -> c = 1.0 / sqrt(pow(jp -> t, 2) + 1);
+    jp -> t = SIGN(jp -> theta) / (fabs(jp -> theta) + sqrt(pow(jp -> theta, 2) + 1.0));
+    jp -> c = 1.0 / sqrt(pow(jp -> t, 2) + 1.0);
     jp -> s = (jp -> t) * (jp -> c);
     return jp;
 }
