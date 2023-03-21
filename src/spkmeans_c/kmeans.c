@@ -24,54 +24,11 @@
     exit(EXIT_FAILURE);\
 }
 
-size_t strcount(char *str, char c);
 void handle_args(int argc, char *argv[], size_t *k, size_t *iter);
 size_t build_vectors_from_input(size_t k, Vector **vectors, size_t *vector_size);
 size_t assign_vector_to_cluster(Cluster *clusters, Vector vector, size_t vector_size, size_t k);
 bool update_centroid_of_cluster(Cluster *clusters, Vector *vectors, size_t *cluster_mapping, size_t cluster_idx, size_t vectors_count, size_t vector_size, double epsilon);
-void print_vector(Vector vector, size_t vector_size);
 void print_output(Cluster *clusters, size_t vector_size, size_t k);
-
-int main(int argc, char *argv[]) {
-    Cluster *clusters;
-    Vector *vectors = (Vector *) malloc(sizeof(double));
-    size_t vectors_count = 0, k = 0, iter = 0, vector_size = 0, i = 0;
-    handle_args(argc, argv, &k, &iter);
-
-    clusters = (Cluster *) malloc(sizeof(Cluster) * k);
-    
-    if (DEBUG) printf("k: %lu, iter: %lu\n", (unsigned long) k, (unsigned long) iter);
-
-    vectors_count = build_vectors_from_input(k, &vectors, &vector_size);
-    if (DEBUG) printf("Got %lu vectors\n", (unsigned long) vectors_count);
-    
-    init_clusters(&clusters, vectors, vector_size, k);
-    fit(&clusters, vectors_count, vectors, vector_size, k, iter, DEFAULT_EPSILON);
-    print_output(clusters, vector_size, k);
-
-    for (i = 0; i < vectors_count; i++) {
-        if (i < k) {
-            free(clusters[i].centroid);
-        }
-        free(vectors[i]);
-        vectors[i] = NULL;
-    }
-    free(vectors);
-    free(clusters);
-    vectors = NULL;
-    clusters = NULL;
-    return EXIT_SUCCESS;
-}
-
-size_t strcount(char *str, char c) {
-    size_t length = strlen(str), count = 0, i;
-    for (i = 0; i < length; i++) {
-        if (str[i] == c) {
-            count++;
-        }
-    }
-    return count;
-}
 
 void handle_args(int argc, char *argv[], size_t *k, size_t *iter) {
     if (argc == 2) {
@@ -224,16 +181,6 @@ void fit(Cluster **clusters, size_t vectors_count, Vector *vectors, size_t vecto
 
     free(cluster_mapping);
     cluster_mapping = NULL;
-}
-
-void print_vector(Vector vector, size_t vector_size) {
-    size_t i;
-    for (i = 0; i < vector_size; i++) {
-        printf("%.4f", vector[i]);
-        if (i < vector_size - 1) {
-            printf(",");
-        }
-    }
 }
 
 void print_output(Cluster *clusters, size_t vector_size, size_t k) {

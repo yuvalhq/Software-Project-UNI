@@ -1,4 +1,6 @@
 #include <stddef.h>
+#include "strutils.h"
+#include "vector.h"
 
 #define DEFAULT_ITERATIONS_COUNT 300
 #define DEFAULT_EPSILON 0.001
