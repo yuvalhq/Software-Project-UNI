@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 import numpy as np
 
-import kmeans_c
+import mykmeanssp
 
 EPSILON = 0.00001
 
@@ -59,7 +59,7 @@ def kmeanspp(points: np.ndarray, k: int) -> Tuple[np.ndarray, List[int]]:
         centroids[i] = points[new_center]
 
     # step 5
-    result = kmeans_c.fit(
-        centroids.tolist(), points.tolist(), k, kmeans_c.DEFAULT_ITERATIONS_COUNT, EPSILON
+    result = mykmeanssp.fit(
+        centroids.tolist(), points.tolist(), k, mykmeanssp.DEFAULT_ITERATIONS_COUNT, mykmeanssp.DEFAULT_EPSILON
     )
     return result, centroids_idxs
