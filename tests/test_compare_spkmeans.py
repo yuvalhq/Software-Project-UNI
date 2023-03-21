@@ -17,6 +17,10 @@ compare_input_output_test = pytest.mark.parametrize(
             str(Path(__file__).parent.joinpath("testfiles").resolve()),
             str(Path(__file__).parent.joinpath("testfiles/ofek_s").resolve()),
         ),
+                (
+            str(Path(__file__).parent.joinpath("testfiles").resolve()),
+            str(Path(__file__).parent.joinpath("testfiles/sophie").resolve()),
+        ),
     ],
 )
 
