@@ -2,6 +2,10 @@ from typing import List, Tuple
 
 import numpy as np
 
+import kmeans_c
+
+EPSILON = 0.00001
+
 
 def compute_dx(
     points: np.ndarray,
@@ -55,4 +59,7 @@ def kmeanspp(points: np.ndarray, k: int) -> Tuple[np.ndarray, List[int]]:
         centroids[i] = points[new_center]
 
     # step 5
-    return centroids, centroids_idxs
+    result = kmeans_c.fit(
+        centroids.tolist(), points.tolist(), k, kmeans_c.DEFAULT_ITERATIONS_COUNT, EPSILON
+    )
+    return result, centroids_idxs
