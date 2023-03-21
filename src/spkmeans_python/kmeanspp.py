@@ -4,8 +4,6 @@ import numpy as np
 
 import mykmeanssp
 
-EPSILON = 0.00001
-
 
 def compute_dx(
     points: np.ndarray,
