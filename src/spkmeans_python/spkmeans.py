@@ -7,7 +7,6 @@ from typing import List, Optional
 import numpy as np
 
 import mykmeanssp
-
 from kmeanspp import kmeanspp
 
 Vector = List[float]

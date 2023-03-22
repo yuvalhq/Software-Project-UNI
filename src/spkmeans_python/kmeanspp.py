@@ -58,6 +58,10 @@ def kmeanspp(points: np.ndarray, k: int) -> Tuple[np.ndarray, List[int]]:
 
     # step 5
     result = mykmeanssp.fit(
-        centroids.tolist(), points.tolist(), k, mykmeanssp.DEFAULT_ITERATIONS_COUNT, mykmeanssp.DEFAULT_EPSILON
+        centroids.tolist(),
+        points.tolist(),
+        k,
+        mykmeanssp.DEFAULT_ITERATIONS_COUNT,
+        mykmeanssp.DEFAULT_EPSILON,
     )
     return result, centroids_idxs
