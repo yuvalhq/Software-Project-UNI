@@ -166,24 +166,6 @@ static PyObject* spk_wrapper(PyObject *self, PyObject *args, PyObject *kwargs) {
     return res;
 }
 
-void convert_python_float_list_to_double_array(PyObject *float_list, double arr[]) {
-    Py_ssize_t i;
-    Py_ssize_t n = PyList_Size(float_list);
-
-    for (i = 0; i < n; i++) {
-        PyObject *item = PyList_GetItem(float_list, i);
-        arr[i] = PyFloat_AsDouble(item);
-    }
-}
-
-void convert_double_array_to_python_float_list(PyObject *float_list, double arr[], Py_ssize_t n) {
-    Py_ssize_t i;
-
-    for (i = 0; i < n; i++) {
-        PyList_SetItem(float_list, i, PyFloat_FromDouble(arr[i]));
-    }
-}
-
 static PyObject* kmeans_fit_wrapper(PyObject *self, PyObject *args) {
     PyObject *centroids_lst, *vectors_lst, *res;
     Py_ssize_t iter = DEFAULT_ITERATIONS_COUNT, vectors_count, vector_size, k, i;

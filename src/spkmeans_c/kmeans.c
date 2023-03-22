@@ -24,74 +24,6 @@
     exit(EXIT_FAILURE);\
 }
 
-void handle_args(int argc, char *argv[], size_t *k, size_t *iter);
-size_t build_vectors_from_input(size_t k, Vector **vectors, size_t *vector_size);
-size_t assign_vector_to_cluster(Cluster *clusters, Vector vector, size_t vector_size, size_t k);
-bool update_centroid_of_cluster(Cluster *clusters, Vector *vectors, size_t *cluster_mapping, size_t cluster_idx, size_t vectors_count, size_t vector_size, double epsilon);
-void print_output(Cluster *clusters, size_t vector_size, size_t k);
-
-void handle_args(int argc, char *argv[], size_t *k, size_t *iter) {
-    if (argc == 2) {
-        *k = atoi(argv[1]);
-        *iter = DEFAULT_ITERATIONS_COUNT;
-    } else if (argc == 3) {
-        *k = atoi(argv[1]);
-        *iter = atoi(argv[2]);
-    } else {
-        FATAL_ERROR();
-    }
-
-    if (*k <= 1) {
-        FATAL_ERROR_CUSTOM_MSG("Invalid number of clusters!\n");
-    }
-
-    if (*iter <= 1 || *iter >= 1000) {
-        FATAL_ERROR_CUSTOM_MSG("Invalid maximum iteration!\n");
-    }
-}
-
-size_t build_vectors_from_input(size_t k, Vector **vectors, size_t *vector_size) {
-    char *line = NULL;
-    size_t line_len;
-    ssize_t read_len;
-    size_t vector_len;
-    Vector vector;
-    char *vector_idx;
-    size_t vectors_count = 0;
-    size_t i = 0;
-
-    while ((read_len = getline(&line, &line_len, stdin)) != -1) {
-        vector_len = strcount(line, COMMA) + 1;
-        if (*vector_size == 0) {
-            *vector_size = vector_len;
-        } else if (*vector_size != vector_len) {
-            FATAL_ERROR();
-        }
-
-        vector = (Vector) malloc(sizeof(double) * vector_len);
-        vector_idx = line;
-
-        for (i = 0; i < vector_len; i++) {
-            vector[i] = strtod(vector_idx, &vector_idx);
-            if (*vector_idx != COMMA && *vector_idx != NEWLINE) {
-                FATAL_ERROR();
-            }
-            vector_idx++;
-        }
-
-        *vectors = (Vector *) realloc(*vectors, ++vectors_count * sizeof(Vector));
-        (*vectors)[vectors_count - 1] = vector;
-    }
-
-    if (k >= vectors_count) {
-        FATAL_ERROR_CUSTOM_MSG("Invalid number of clusters!\n");
-    }
-
-    free(line);
-    line = NULL;
-    return vectors_count;
-}
-
 Distance euclidean_distance(Vector p, Vector q, size_t size) {
     double distance = 0;
     size_t i;
@@ -153,16 +85,6 @@ bool update_centroid_of_cluster(Cluster *cluster, Vector *vectors, size_t *clust
     return done;
 }
 
-void init_clusters(Cluster **clusters, Vector *vectors, size_t vector_size, size_t k) {
-    size_t i;
-    for (i = 0; i < k; i++) {
-        Cluster cluster;
-        cluster.centroid = calloc(vector_size, sizeof(double));
-        memcpy(cluster.centroid, vectors[i], vector_size * sizeof(double));
-        (*clusters)[i] = cluster;
-    }
-}
-
 void fit(Cluster **clusters, size_t vectors_count, Vector *vectors, size_t vector_size, size_t k, size_t iter, double epsilon) {
     size_t *cluster_mapping = (size_t *) calloc(vectors_count, sizeof(size_t));
     size_t i, j;
@@ -181,12 +103,4 @@ void fit(Cluster **clusters, size_t vectors_count, Vector *vectors, size_t vecto
 
     free(cluster_mapping);
     cluster_mapping = NULL;
-}
-
-void print_output(Cluster *clusters, size_t vector_size, size_t k) {
-    size_t i;
-    for (i = 0; i < k; i++) {
-        print_vector(clusters[i].centroid, vector_size);
-        printf("\n");
-    }
 }
