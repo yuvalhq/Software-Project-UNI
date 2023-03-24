@@ -50,7 +50,8 @@ DEBUG_MAIN              := $(MAIN)-debug
 .PHONY: build build-python-extension build-tests \
 	build-debug build-devel-image \
 	valgrind clean generate-requirements \
-	run-tests run-pytest run-black run-isort \
+	run-tests run-pytest \
+	run-clang-format run-black run-isort \
 	pre-commit
 
 build: $(SRC_OBJECTS)
@@ -128,6 +129,9 @@ run-tests: build-tests
 
 run-pytest: build-python-extension
 	python3 -m pytest -sv .
+
+run-clang-format:
+	find src tests -name *.c -o -name *.h -exec clang-format -i {} \+
 
 run-black:
 	python3 -m black .

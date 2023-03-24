@@ -10,7 +10,7 @@
 #define DEFAULT_EPSILON 0.001
 
 typedef struct Cluster {
-  Vector centroid;
+    Vector centroid;
 } Cluster;
 
 /**

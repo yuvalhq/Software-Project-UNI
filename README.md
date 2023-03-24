@@ -18,6 +18,10 @@ pre-commit install --install-hooks
 pre-commit run --all-files
 ```
 - `GitHub Actions` - for continuously running the pre-commit hooks (configuration [here](.github/workflows/pre-commit.yaml)).
+- `clang-format` - An auto-formatting tool for C. Runs automatically by `pre-commit`, and you can run manually by running:
+```bash
+make run-clang-format
+```
 - `black` - An auto-formatting tool for Python. Runs automatically by `pre-commit`, and you can run manually by running:
 ```bash
 make run-black
