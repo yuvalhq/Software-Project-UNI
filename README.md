@@ -49,8 +49,12 @@ pipenv install
 pipenv run python3 src/spkmeans_python/spkmeans.py
 ```
 
-> **Note**
-> The extension's `so` file will be placed in the top level directory, so you must make sure it's importable from your Python code.
+If you don't have `pipenv` installed, it's also possible to run:
+```bash
+make build-python-extension
+python3 src/spkmeans_python/spkmeans.py
+```
+The `build-python-extensions` make target will create a link to the shared object in the Python's code directory, so it's importable from that directory.
 
 To run Valgrind on the compiled binary, you must make sure that it's compiled with the debug symbols. If you already built the binary, it's encouraged to run `make clean`, and then you can run:
 ```bash
