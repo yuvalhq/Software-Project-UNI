@@ -1,26 +1,26 @@
 #ifndef KMEANS_H
 #define KMEANS_H
 
-#include <stddef.h>
-#include <math.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include "strutils.h"
 #include "vector.h"
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
 
 #define DEFAULT_ITERATIONS_COUNT 300
-#define DEFAULT_EPSILON 0.00001
-
-typedef double Distance;
+#define DEFAULT_EPSILON 0.001
 
 typedef struct Cluster {
-    Vector centroid;
+  Vector centroid;
 } Cluster;
 
-Distance euclidean_distance(Vector p, Vector q, size_t size);
-size_t assign_vector_to_cluster(Cluster *clusters, Vector vector, size_t vector_size, size_t k);
-bool update_centroid_of_cluster(Cluster *clusters, Vector *vectors, size_t *cluster_mapping, size_t cluster_idx, size_t vectors_count, size_t vector_size, double epsilon);
-void fit(Cluster **clusters, size_t vectors_count, Vector *vectors, size_t vector_size, size_t k, size_t iter, double epsilon);
+/**
+ * Receive an array of initial clusters, an array of vectors to
+ * cluster, the number of vectors, the size of each vector, the value k, number
+ * of iterations and an epsilon value, and partition the vectors to clusters,
+ * using the K-means algorithm. The return value is void, and the new clusters
+ * are set in the passed clusters array.
+ */
+void fit(Cluster *clusters, Vector *vectors, size_t vectors_count,
+         size_t vector_size, size_t k, size_t iter, double epsilon);
 
 #endif
