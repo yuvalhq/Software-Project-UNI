@@ -50,7 +50,8 @@ DEBUG_MAIN              := $(MAIN)-debug
 .PHONY: build build-python-extension build-tests \
 	build-debug build-devel-image \
 	valgrind clean generate-requirements \
-	run-tests run-pytest run-black run-isort \
+	run-tests run-pytest \
+	run-clang-format run-black run-isort \
 	pre-commit
 
 build: $(SRC_OBJECTS)
@@ -62,6 +63,7 @@ build: $(SRC_OBJECTS)
 build-python-extension: $(PYTHON_EXTENSION_C) $(PYTHON_EXTENSION_H) $(PYTHON_EXTENSION_SETUP)
 	@echo -en "$(BROWN)Building setup.py $(END_COLOR)";
 	python3 $(PYTHON_EXTENSION_SETUP) build_ext --inplace
+	ln *.so src/spkmeans_python/
 
 build-tests: $(TESTS_MAIN_OBJECT) $(TESTS_LIB_OBJECT) $(filter-out $(MAIN).o,$(SRC_OBJECTS))
 	@echo -en "$(BROWN)LD $(END_COLOR)";
@@ -128,6 +130,9 @@ run-tests: build-tests
 
 run-pytest: build-python-extension
 	python3 -m pytest -sv .
+
+run-clang-format:
+	find src tests -name *.c -o -name *.h -exec clang-format -i {} \+
 
 run-black:
 	python3 -m black .

@@ -11,7 +11,8 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked \
     make \
     gcc \
     git \
-    valgrind
+    valgrind \
+    clang-format
 
 COPY . /usr/src
 WORKDIR /usr/src

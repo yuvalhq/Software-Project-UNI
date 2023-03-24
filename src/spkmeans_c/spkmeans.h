@@ -1,12 +1,10 @@
 #ifndef SPKMEANS_H
 #define SPKMEANS_H
 
-#include <stddef.h>
 #include "matrix.h"
+#include <stddef.h>
 
-typedef enum Goal {
-    WAM, DDG, GL, JACOBI, UNKNOWN
-} Goal;
+typedef enum Goal { WAM, DDG, GL, JACOBI, UNKNOWN } Goal;
 
 typedef struct CommandLineArguments {
     enum Goal goal;
@@ -16,6 +14,6 @@ typedef struct CommandLineArguments {
 static char *goal_names[] = {"wam", "ddg", "gl", "jacobi", "unknown", NULL};
 
 static Goal create_goal_from_name(char *goal_name);
-static CommandLineArguments* handle_args(int argc, char *argv[]);
+static CommandLineArguments *handle_args(int argc, char *argv[]);
 
 #endif

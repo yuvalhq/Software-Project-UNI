@@ -1,9 +1,9 @@
 #ifndef PYUTILS_H
 #define PYUTILS_H
 
-#include <Python.h>
-#include "vector.h"
 #include "matrix.h"
+#include "vector.h"
+#include <Python.h>
 
 Vector from_python_vector(PyObject *python_vector);
 PyObject *to_python_vector(Vector vector, Py_ssize_t n);
