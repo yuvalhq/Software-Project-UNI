@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 #define DEFAULT_ITERATIONS_COUNT 300
-#define DEFAULT_EPSILON 0.001
+#define DEFAULT_EPSILON 0
 
 typedef struct Cluster {
     Vector centroid;
