@@ -7,7 +7,6 @@ from typing import List, Optional
 import numpy as np
 
 import mykmeanssp
-
 from kmeanspp import kmeanspp
 
 Vector = List[float]
@@ -93,8 +92,7 @@ def main():
             new_points, k = mykmeanssp.spk(input_matrix, cmd_args.k)
         except Exception:
             sys.exit(DEFAULT_ERR_MSG)
-        centroids, centroids_idxs = kmeanspp(np.array(new_points).T, k)
-        output = centroids.tolist()
+        output, centroids_idxs = kmeanspp(np.array(new_points).T, k)
         print_int_list(centroids_idxs)
     else:
         output = goal_map[cmd_args.goal](input_matrix)

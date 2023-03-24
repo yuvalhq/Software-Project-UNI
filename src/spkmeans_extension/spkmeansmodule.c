@@ -4,12 +4,13 @@
 #include "pyutils.h"
 #include "spectral.h"
 #include "jacobi.h"
+#include "kmeans.h"
 
 static PyObject* wam_wrapper(PyObject *self, PyObject *args) {
     Py_ssize_t m, n;
     PyObject *data_points = NULL;
     PyObject *res = NULL;
-    Matrix mat = NULL;
+    Matrix data_points_mat = NULL;
     Matrix wam = NULL;
 
     if (!PyArg_ParseTuple(args, "O", &data_points)) {
@@ -18,12 +19,12 @@ static PyObject* wam_wrapper(PyObject *self, PyObject *args) {
 
     n = PyList_Size(data_points);
     m = PyList_Size(PyList_GetItem(data_points, 0));
-    mat = from_python_matrix(data_points);
+    data_points_mat = from_python_matrix(data_points);
 
-    wam = weighted_adjacency_matrix(mat, n, m);
+    wam = weighted_adjacency_matrix(data_points_mat, n, m);
     res = to_python_matrix(wam, n, n);
 
-    free_matrix(mat, n);
+    free_matrix(data_points_mat, n);
     free_matrix(wam, n);
 
     return res;
@@ -33,7 +34,7 @@ static PyObject* ddg_wrapper(PyObject *self, PyObject *args) {
     Py_ssize_t m, n;
     PyObject *data_points = NULL;
     PyObject *res = NULL;
-    Matrix mat = NULL;
+    Matrix data_points_mat = NULL;
     Matrix wam = NULL;
     Matrix ddg = NULL;
 
@@ -43,14 +44,14 @@ static PyObject* ddg_wrapper(PyObject *self, PyObject *args) {
 
     n = PyList_Size(data_points);
     m = PyList_Size(PyList_GetItem(data_points, 0));
-    mat = from_python_matrix(data_points);
+    data_points_mat = from_python_matrix(data_points);
 
-    wam = weighted_adjacency_matrix(mat, n, m);
+    wam = weighted_adjacency_matrix(data_points_mat, n, m);
     ddg = diagonal_degree_matrix(wam, n);
 
     res = to_python_matrix(ddg, n, n);
 
-    free_matrix(mat, n);
+    free_matrix(data_points_mat, n);
     free_matrix(wam, n);
     free_matrix(ddg, n);
 
@@ -61,7 +62,7 @@ static PyObject* gl_wrapper(PyObject *self, PyObject *args) {
     Py_ssize_t m, n;
     PyObject *data_points = NULL;
     PyObject *res = NULL;
-    Matrix mat = NULL;
+    Matrix data_points_mat = NULL;
     Matrix wam = NULL;
     Matrix ddg = NULL;
     Matrix gl = NULL;
@@ -72,15 +73,15 @@ static PyObject* gl_wrapper(PyObject *self, PyObject *args) {
 
     n = PyList_Size(data_points);
     m = PyList_Size(PyList_GetItem(data_points, 0));
-    mat = from_python_matrix(data_points);
+    data_points_mat = from_python_matrix(data_points);
 
-    wam = weighted_adjacency_matrix(mat, n, m);
+    wam = weighted_adjacency_matrix(data_points_mat, n, m);
     ddg = diagonal_degree_matrix(wam, n);
     gl = graph_laplacian(ddg, wam, n);
 
     res = to_python_matrix(gl, n, n);
 
-    free_matrix(mat, n);
+    free_matrix(data_points_mat, n);
     free_matrix(wam, n);
     free_matrix(ddg, n);
     free_matrix(gl, n);
@@ -91,7 +92,7 @@ static PyObject* gl_wrapper(PyObject *self, PyObject *args) {
 static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     Py_ssize_t n;
     PyObject *data_points = NULL;
-    Matrix mat = NULL;
+    Matrix data_points_mat = NULL;
     JacobiResult *jacobi_result = NULL;
 
     PyObject *res = NULL;
@@ -103,8 +104,8 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     }
 
     n = PyList_Size(data_points);
-    mat = from_python_matrix(data_points);
-    jacobi_result = jacobi(mat, n);
+    data_points_mat = from_python_matrix(data_points);
+    jacobi_result = jacobi(data_points_mat, n);
 
     eigenvectors = to_python_matrix(jacobi_result -> eigenvectors, n, n);
     eigenvalues = to_python_vector(jacobi_result -> eigenvalues, n);
@@ -112,7 +113,7 @@ static PyObject* jacobi_wrapper(PyObject *self, PyObject *args) {
     PyTuple_SetItem(res, 0, eigenvectors);
     PyTuple_SetItem(res, 1, eigenvalues);
 
-    free_matrix(mat, n);
+    free_matrix(data_points_mat, n);
     free_matrix(jacobi_result -> eigenvectors, n);
     free(jacobi_result -> eigenvalues);
     free(jacobi_result);
@@ -162,6 +163,46 @@ static PyObject* spk_wrapper(PyObject *self, PyObject *args, PyObject *kwargs) {
 
     free_matrix(data_points_c, n);
     free(spr);
+    return res;
+}
+
+static PyObject* kmeans_fit_wrapper(PyObject *self, PyObject *args) {
+    PyObject *initial_centroids_lst = NULL, *data_points = NULL, *res = NULL, *centroid = NULL;
+    Py_ssize_t n, m, k, i;
+    Cluster *clusters = NULL;
+    Matrix initial_centroids_mat = NULL;
+    Matrix data_points_mat = NULL;
+
+    Py_ssize_t iter = DEFAULT_ITERATIONS_COUNT;
+    double epsilon = DEFAULT_EPSILON;
+
+    if (!PyArg_ParseTuple(args, "OOn|n|d", &initial_centroids_lst, &data_points, &k, &iter, &epsilon)) {
+        return NULL;
+    }
+
+    n = PyList_Size(data_points);
+    m = PyList_Size(PyList_GetItem(data_points, 0));
+
+    data_points_mat = from_python_matrix(data_points);
+    initial_centroids_mat = from_python_matrix(initial_centroids_lst);
+    clusters = (Cluster *) malloc(sizeof(Cluster) * k);
+
+    for (i = 0; i < k; i++) {
+        clusters[i].centroid = initial_centroids_mat[i];
+    }
+
+    fit(clusters, data_points_mat, n, m, k, iter, epsilon);
+
+    res = PyList_New(k);
+    for (i = 0; i < k; i++) {
+        centroid = to_python_vector(clusters[i].centroid, m);
+        PyList_SetItem(res, i, centroid);
+        free(clusters[i].centroid);
+    }
+
+    free(clusters);
+    free_matrix(data_points_mat, n);
+
     return res;
 }
 
@@ -254,6 +295,30 @@ static PyMethodDef spkmeans_methods[] = {
             "    The datapoints to calculate spectral clustering on."
         )
     },
+    {
+        .ml_name = "fit",
+        .ml_meth = (PyCFunction) kmeans_fit_wrapper,
+        .ml_flags = METH_VARARGS,
+        .ml_doc = PyDoc_STR(
+            "fit(centroids_lst, vectors_lst, k, iter=300, epsilon=0.001)\n"
+            "--\n"
+            "\n"
+            "Fits the Kmeans model. The centroids and vectors are represented as a list vectors, "
+            "each represented as a list of floats.\n\n"
+            "Parameters\n"
+            "----------\n"
+            "centroids_lst:\n"
+            "    The list of initial centroids.\n"
+            "vectors_lst:\n"
+            "    The list vectors to partition to different clusters.\n"
+            "k:\n"
+            "    The number of clusters to partition.\n"
+            "iter:\n"
+            "    The number of iterations of the algorithm to run.\n"
+            "epsilon:\n"
+            "    Epsilon value used for convergence."
+        )
+    },
     {NULL, NULL, 0, NULL}
 };
 
@@ -267,10 +332,14 @@ static struct PyModuleDef spkmeans_module = {
 
 PyMODINIT_FUNC PyInit_mykmeanssp(void) {
     PyObject *module = PyModule_Create(&spkmeans_module);
+    PyObject *default_epsilon = PyFloat_FromDouble(DEFAULT_EPSILON);
 
     if (!module) {
         return NULL;
     }
+
+    PyModule_AddIntConstant(module, "DEFAULT_ITERATIONS_COUNT", DEFAULT_ITERATIONS_COUNT);
+    PyModule_AddObject(module, "DEFAULT_EPSILON", default_epsilon);
 
     return module;
 }
